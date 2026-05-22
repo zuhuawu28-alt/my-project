@@ -75,6 +75,9 @@ header.scrolled{background:rgba(5,5,16,0.92)}
 .sub-card:hover{transform:translateY(-6px) scale(1.01);background:var(--card-hover);box-shadow:var(--glow),0 20px 60px rgba(0,200,255,0.06);border-color:var(--primary)}
 .sub-card .sc-img{width:100%;height:140px;object-fit:cover;transition:transform 0.6s}
 .sub-card:hover .sc-img{transform:scale(1.05)}
+.sub-card.has-img .sc-img{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0}
+.sub-card.has-img{min-height:200px}
+.sub-card.has-img .sc-body{position:relative;z-index:1;justify-content:flex-end;min-height:200px;background:linear-gradient(transparent 30%,rgba(0,0,0,0.85));padding:16px}
 .sub-card .sc-body{padding:12px;flex:1;display:flex;flex-direction:column}
 .sub-card .sc-body h4{font-size:13px;margin-bottom:4px;line-height:1.5;color:var(--text)}
 .sub-card .sc-body .sc-meta{font-size:10px;color:var(--text3);margin-bottom:4px}
@@ -441,13 +444,13 @@ function renderMainContent(){
 }
 
 function createArticleCard(a){
-  const card=document.createElement('div');card.className='sub-card';
-  card.onclick=()=>openArticle(a);
+  const card=document.createElement('div');
   const secName=getSecName(a.section);
-  const showImg=a.showImages!==false&&a.images&&a.images[0];
   const hasImg=a.showImages!==false&&a.images&&a.images[0];
+  card.className='sub-card'+(hasImg?' has-img':'');
+  card.onclick=()=>openArticle(a);
   card.innerHTML=
-    (showImg?'<img class="sc-img" src="'+a.images[0]+'" onerror="this.style.display=\'none\'" alt="">':'')+
+    (hasImg?'<img class="sc-img" src="'+a.images[0]+'" onerror="this.style.display=\'none\'" alt="">':'')+
     '<div class="sc-body">'+
     '<span class="sc-tag">'+secName+'</span>'+
     '<h4>'+a.title+'</h4>'+
