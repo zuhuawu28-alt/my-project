@@ -96,6 +96,8 @@ def ensure_defaults():
         ])
     if not os.path.exists(data_path('session')):
         write_json('session', {})
+    if not os.path.exists(data_path('members')):
+        write_json('members', [])
 
 ensure_defaults()
 
@@ -150,7 +152,8 @@ def api_get_data():
         'videos': read_json('videos'),
         'templates': read_json('templates'),
         'admins': read_json('admins'),
-        'sections': read_json('sections')
+        'sections': read_json('sections'),
+        'members': read_json('members')
     })
 
 @app.route('/api/data', methods=['POST'])
@@ -206,16 +209,128 @@ def api_delete_comment():
     for a in articles: a['comments'] = [c for c in a.get('comments',[]) if c['id'] != cid]
     write_json('articles', articles); return jsonify({'ok':True})
 
+# ===== MEMBER API =====
+MEMBER_LEVELS = {'normal':'普通会员','vip1':'VIP会员','vip2':'黄金VIP','vip3':'钻石VIP'}
+
+def get_member_session():
+    s = read_json('session')
+    mid = s.get('member_id','')
+    if not mid: return None
+    members = read_json('members')
+    for m in members:
+        if m['id'] == mid: return m
+    return None
+
+def save_member_session(mid):
+    s = read_json('session')
+    s['member_id'] = mid
+    write_json('session', s)
+
+def clear_member_session():
+    s = read_json('session')
+    s.pop('member_id', None)
+    write_json('session', s)
+
+@app.route('/api/member/register', methods=['POST'])
+def api_member_register():
+    body = request.get_json()
+    user = (body.get('user') or '').strip()
+    pwd = (body.get('pass') or '').strip()
+    if not user or not pwd: return jsonify({'ok':False,'msg':'用户名和密码不能为空'})
+    if len(user) < 2 or len(user) > 20: return jsonify({'ok':False,'msg':'用户名长度2-20个字符'})
+    if len(pwd) < 4: return jsonify({'ok':False,'msg':'密码至少4位'})
+    members = read_json('members')
+    if any(m['user'] == user for m in members): return jsonify({'ok':False,'msg':'用户名已存在'})
+    new_member = {
+        'id': 'm' + str(uuid.uuid4())[:8],
+        'user': user, 'pass': pwd,
+        'level': 'normal', 'points': 0,
+        'registerDate': now(), 'avatar': '',
+        'commentCount': 0
+    }
+    members.append(new_member)
+    write_json('members', members)
+    save_member_session(new_member['id'])
+    return jsonify({'ok':True, 'member':{'id':new_member['id'],'user':new_member['user'],'level':new_member['level'],'points':new_member['points']}})
+
+@app.route('/api/member/login', methods=['POST'])
+def api_member_login():
+    body = request.get_json()
+    user = (body.get('user') or '').strip()
+    pwd = (body.get('pass') or '').strip()
+    if not user or not pwd: return jsonify({'ok':False,'msg':'请输入用户名和密码'})
+    members = read_json('members')
+    for m in members:
+        if m['user'] == user and m['pass'] == pwd:
+            save_member_session(m['id'])
+            return jsonify({'ok':True, 'member':{'id':m['id'],'user':m['user'],'level':m['level'],'points':m['points']}})
+    return jsonify({'ok':False,'msg':'用户名或密码错误'})
+
+@app.route('/api/member/session')
+def api_member_session():
+    m = get_member_session()
+    if m: return jsonify({'ok':True, 'member':{'id':m['id'],'user':m['user'],'level':m['level'],'points':m['points']}})
+    return jsonify({'ok':False})
+
+@app.route('/api/member/logout', methods=['POST'])
+def api_member_logout():
+    clear_member_session()
+    return jsonify({'ok':True})
+
+@app.route('/api/members', methods=['GET'])
+def api_get_members():
+    role = check_role()
+    if not role or role not in ('superadmin','content'): return jsonify({'ok':False,'msg':'权限不足'})
+    members = read_json('members')
+    return jsonify(members)
+
+@app.route('/api/members/update', methods=['POST'])
+def api_update_member():
+    role = check_role()
+    if not role or role not in ('superadmin','content'): return jsonify({'ok':False,'msg':'权限不足'})
+    body = request.get_json()
+    mid = body.get('id'); new_level = body.get('level')
+    if not mid or new_level not in MEMBER_LEVELS: return jsonify({'ok':False,'msg':'参数错误'})
+    members = read_json('members')
+    for m in members:
+        if m['id'] == mid: m['level'] = new_level; write_json('members', members); return jsonify({'ok':True})
+    return jsonify({'ok':False,'msg':'未找到会员'})
+
+@app.route('/api/members/delete', methods=['POST'])
+def api_delete_member():
+    role = check_role()
+    if not role or role not in ('superadmin','content'): return jsonify({'ok':False,'msg':'权限不足'})
+    mid = request.get_json().get('id')
+    members = read_json('members')
+    members = [m for m in members if m['id'] != mid]
+    write_json('members', members)
+    return jsonify({'ok':True})
+
 @app.route('/api/comment', methods=['POST'])
 def api_add_comment():
     body = request.get_json()
     aid = body.get('articleId'); content = body.get('content','').strip()
     if not aid or not content: return jsonify({'ok':False,'msg':'参数不完整'})
+    member = get_member_session()
+    user = member['user'] if member else (body.get('user','访客').strip() or '访客')
+    level = member['level'] if member else ''
     articles = read_json('articles')
     for a in articles:
         if a['id'] == aid:
-            a.setdefault('comments',[]).append({'id':'c'+str(uuid.uuid4())[:8],'user':body.get('user','访客').strip() or '访客','content':content,'time':now(),'approved':False})
-            write_json('articles', articles); return jsonify({'ok':True})
+            cmt = {'id':'c'+str(uuid.uuid4())[:8],'user':user,'content':content,'time':now(),'approved':False}
+            if level: cmt['memberLevel'] = level
+            a.setdefault('comments',[]).append(cmt)
+            write_json('articles', articles)
+            # update member comment count
+            if member:
+                members = read_json('members')
+                for m in members:
+                    if m['id'] == member['id']:
+                        m['commentCount'] = m.get('commentCount',0) + 1
+                        m['points'] = m.get('points',0) + 1
+                        write_json('members', members)
+                        break
+            return jsonify({'ok':True})
     return jsonify({'ok':False,'msg':'文章不存在'})
 
 @app.route('/api/upload', methods=['POST'])
@@ -226,10 +341,13 @@ def api_upload():
     f = request.files['file']
     if not f.filename: return jsonify({'ok':False,'msg':'文件名为空'})
     ext = os.path.splitext(f.filename)[1].lower()
-    if ext not in ('.jpg','.jpeg','.png','.gif','.webp','.svg'): return jsonify({'ok':False,'msg':'不支持的文件格式'})
+    if ext not in ('.jpg','.jpeg','.png','.gif','.webp','.svg','.mp4','.webm','.mov','.avi','.mkv'): return jsonify({'ok':False,'msg':'不支持的文件格式'})
     name = str(uuid.uuid4())[:12] + ext
     os.makedirs(UPLOAD_DIR, exist_ok=True)
     f.save(os.path.join(UPLOAD_DIR, name))
+    url = '/uploads/'+name
+    if ext in ('.mp4','.webm','.mov','.avi','.mkv'):
+        url = name
     return jsonify({'ok':True,'url':'/uploads/'+name})
 
 if __name__ == '__main__':

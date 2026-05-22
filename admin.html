@@ -113,6 +113,7 @@ tr:hover{background:rgba(255,255,255,0.02)}
       <a onclick="switchPage('sections',this)">栏目管理</a>
       <a onclick="switchPage('videos',this)">视频管理</a>
       <a onclick="switchPage('comments',this)">留言审核</a>
+      <a onclick="switchPage('members',this)" id="navMembers">会员管理</a>
       <a onclick="switchPage('templates',this)">模板管理</a>
       <a onclick="switchPage('admins',this)" id="navAdmins">管理员</a>
     </div>
@@ -126,7 +127,7 @@ tr:hover{background:rgba(255,255,255,0.02)}
     <!-- 概览 -->
     <div class="page-section active" id="page-dashboard">
       <h3>系统概览</h3>
-      <div class="form-grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="form-grid" style="grid-template-columns:repeat(5,1fr)">
         <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:16px">
           <div style="font-size:11px;color:#5a7a90">文章总数</div>
           <div style="font-size:32px;font-weight:700;color:#00c8ff" id="statArticles">0</div>
@@ -143,10 +144,14 @@ tr:hover{background:rgba(255,255,255,0.02)}
           <div style="font-size:11px;color:#5a7a90">留言待审核</div>
           <div style="font-size:32px;font-weight:700;color:#ffa502" id="statComments">0</div>
         </div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:16px">
+          <div style="font-size:11px;color:#5a7a90">会员总数</div>
+          <div style="font-size:32px;font-weight:700;color:#7bed9f" id="statMembers">0</div>
+        </div>
       </div>
       <div style="margin-top:16px;font-size:13px;color:#5a7a90;line-height:2">
         <p>当前用户：<strong id="dashUser"></strong> · 角色：<strong id="dashRole"></strong></p>
-        <p>总栏目数：<strong id="statTotalSections">0</strong>（一级 <span id="statRootSections">0</span> · 子级 <span id="statChildSections">0</span>）</p>
+        <p>总栏目数：<strong id="statTotalSections">0</strong>（一级 <span id="statRootSections">0</span> · 子级 <span id="statChildSections">0</span>） · 会员总数：<strong id="statMembers">0</strong></p>
       </div>
     </div>
 
@@ -160,6 +165,10 @@ tr:hover{background:rgba(255,255,255,0.02)}
       <div id="articleEditor">
         <div class="form-grid">
           <div class="full"><label>文章标题</label><input id="artTitle" placeholder="输入文章标题"></div>
+          <div class="full">
+            <label>英文内容（双语朗读用）</label>
+            <textarea id="artEnBody" style="min-height:60px;font-family:'Georgia','Times New Roman',serif" placeholder="Enter English version for bilingual reading"></textarea>
+          </div>
           <div class="full">
             <label>正文内容</label>
             <div style="margin-bottom:4px;display:flex;gap:4px;flex-wrap:wrap">
@@ -199,6 +208,12 @@ tr:hover{background:rgba(255,255,255,0.02)}
               <input id="artVideoTitle" placeholder="视频标题" style="flex:0.5">
               <button class="sm ghost" onclick="addArticleVideo()">添加</button>
             </div>
+            <div class="image-input-row" style="margin-top:8px">
+              <span style="font-size:12px;color:var(--text3);white-space:nowrap">上传视频文件:</span>
+              <input type="file" id="artVideoFile" accept="video/mp4,video/webm,video/quicktime" style="color:var(--text);font-size:13px;flex:1">
+              <button class="sm success" onclick="uploadArticleVideo()">上传</button>
+              <span id="artVideoUploadMsg" style="font-size:12px;color:var(--text3)"></span>
+            </div>
             <div id="artVideosPreview"></div>
           </div>
         </div>
@@ -236,7 +251,8 @@ tr:hover{background:rgba(255,255,255,0.02)}
       <div class="form-grid">
         <div class="full"><label>视频标题</label><input id="videoTitle" placeholder="输入视频标题"></div>
         <div class="full"><label>视频描述</label><textarea id="videoDesc" placeholder="输入视频描述"></textarea></div>
-        <div class="full"><label>嵌入URL</label><input id="videoUrl" placeholder="https://www.youtube.com/embed/..."></div>
+        <div class="full"><label>嵌入URL 或 上传视频</label><input id="videoUrl" placeholder="https://www.youtube.com/embed/..."></div>
+        <div class="full" style="grid-column:1/-1"><label>上传视频文件</label><input type="file" id="videoFile" accept="video/mp4,video/webm,video/quicktime" style="color:var(--text);font-size:13px"><button class="sm" onclick="uploadVideoFile()" style="margin-top:6px">上传</button> <span id="videoUploadMsg" style="font-size:12px;color:var(--text3)"></span></div>
         <div><label>图标</label><input id="videoIcon" value="🎬"></div>
         <div><label>日期</label><input id="videoDate" placeholder="2026-04"></div>
       </div>
@@ -256,6 +272,20 @@ tr:hover{background:rgba(255,255,255,0.02)}
         <button onclick="switchCommentTab(this,'approved')">已通过</button>
       </div>
       <div class="data-table" id="commentList"></div>
+    </div>
+
+    <!-- 会员管理 -->
+    <div class="page-section" id="page-members">
+      <h3>会员管理</h3>
+      <div style="font-size:13px;color:#5a7a90;margin-bottom:10px">管理会员账号和会员等级。</div>
+      <div class="tab-bar">
+        <button class="active" onclick="switchMemberTab(this,'all')">全部</button>
+        <button onclick="switchMemberTab(this,'normal')">普通会员</button>
+        <button onclick="switchMemberTab(this,'vip1')">VIP会员</button>
+        <button onclick="switchMemberTab(this,'vip2')">黄金VIP</button>
+        <button onclick="switchMemberTab(this,'vip3')">钻石VIP</button>
+      </div>
+      <div class="data-table" id="memberList"></div>
     </div>
 
     <!-- 模板管理 -->
@@ -329,6 +359,7 @@ function showAdmin(){
   document.getElementById('dashRole').textContent=getRoleLabel(currentUser.role);
   updateStats();
   document.getElementById('navAdmins').style.display=currentUser.role==='superadmin'?'':'none';
+  document.getElementById('navMembers').style.display=currentUser.role==='superadmin'||currentUser.role==='content'?'':'none';
   loadAll();
 }
 
@@ -410,6 +441,7 @@ function renderArticleTabs(){
 function renderArticleList(){
   const c=document.getElementById('articleList');
   let arts=data.articles||[];
+  arts.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   if(articleFilter){
     const keys=getAllDescendantKeys(articleFilter);
     arts=arts.filter(a=>keys.includes(a.section));
@@ -424,7 +456,7 @@ function renderArticleList(){
 }
 
 function clearArticleForm(){
-  ['artTitle','artBody','artSource','artDate'].forEach(id=>document.getElementById(id).value='');
+  ['artTitle','artBody','artEnBody','artSource','artDate'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('artFeatured').value='false';
   document.getElementById('artImagesPreview').innerHTML='';document.getElementById('artVideosPreview').innerHTML='';
   document.getElementById('cancelArtBtn').style.display='none';document.getElementById('saveArtBtn').textContent='发布文章';editingArticleId=null;
@@ -434,6 +466,7 @@ function editArticle(id){
   const a=data.articles.find(x=>x.id===id);if(!a)return;
   editingArticleId=id;
   document.getElementById('artTitle').value=a.title;document.getElementById('artBody').value=a.content;
+  document.getElementById('artEnBody').value=a.enContent||'';
   document.getElementById('artSource').value=a.source||'';document.getElementById('artDate').value=a.date||'';
   document.getElementById('artFeatured').value=a.featured?'true':'false';
   document.getElementById('artSection').value=a.section;
@@ -451,7 +484,7 @@ function getArticleFormData(){
   if(!title){alert('请输入标题');return null}
   const images=[...document.querySelectorAll('#artImagesPreview .image-thumb-wrap img')].map(img=>img.src);
   const videos=[...document.querySelectorAll('#artVideosPreview .video-tag')].map(el=>JSON.parse(el.dataset.video));
-  return {section,title,content:document.getElementById('artBody').value.trim()||'暂无内容',source:document.getElementById('artSource').value.trim(),date:document.getElementById('artDate').value.trim(),featured:document.getElementById('artFeatured').value==='true',images,videos};
+  return {section,title,content:document.getElementById('artBody').value.trim()||'暂无内容',enContent:document.getElementById('artEnBody').value.trim(),source:document.getElementById('artSource').value.trim(),date:document.getElementById('artDate').value.trim(),featured:document.getElementById('artFeatured').value==='true',images,videos};
 }
 
 async function saveArticle(){
@@ -505,6 +538,26 @@ function addArticleVideo(){
   if(!url){alert('请输入视频URL');return}
   document.getElementById('artVideoUrl').value='';document.getElementById('artVideoTitle').value='';
   renderVideosPreview([...getArticleVideos(),{title,url}]);
+}
+
+async function uploadArticleVideo(){
+  const f=document.getElementById('artVideoFile');
+  if(!f.files.length){alert('请选择视频文件');return}
+  const fd=new FormData();fd.append('file',f.files[0]);
+  const msg=document.getElementById('artVideoUploadMsg');
+  msg.textContent='上传中...';
+  try{
+    const r=await(await fetch('/api/upload',{method:'POST',body:fd})).json();
+    if(r&&r.ok){
+      const url=window.location.origin+r.url;
+      const title=f.files[0].name.replace(/\.[^.]+$/,'')||'视频';
+      renderVideosPreview([...getArticleVideos(),{title,url}]);
+      msg.textContent='✅ 上传成功';
+    }else{
+      msg.textContent='❌ '+(r?r.msg:'上传失败');
+    }
+  }catch(e){msg.textContent='❌ 上传失败'}
+  f.value='';
 }
 
 function getArticleVideos(){return[...document.querySelectorAll('#artVideosPreview .video-tag')].map(el=>JSON.parse(el.dataset.video))}
@@ -595,6 +648,22 @@ async function addVideo(){
   renderVideos();updateStats();
 }
 
+async function uploadVideoFile(){
+  const f=document.getElementById('videoFile');
+  if(!f.files.length){alert('请选择视频文件');return}
+  const fd=new FormData();fd.append('file',f.files[0]);
+  const msg=document.getElementById('videoUploadMsg');
+  msg.textContent='上传中...';
+  const r=await(await fetch('/api/upload',{method:'POST',body:fd})).json();
+  if(r&&r.ok){
+    document.getElementById('videoUrl').value=window.location.origin+r.url;
+    msg.textContent='✅ 上传成功';
+  }else{
+    msg.textContent='❌ '+(r?r.msg:'上传失败');
+  }
+  f.value='';
+}
+
 async function deleteVideo(i){if(!confirm('确认删除？'))return;data.videos.splice(i,1);await api('/api/data',{videos:data.videos});renderVideos();updateStats()}
 
 // ===== COMMENTS =====
@@ -605,9 +674,10 @@ function renderComments(){
   if(commentFilter==='pending')all=all.filter(c=>!c.approved);
   if(commentFilter==='approved')all=all.filter(c=>c.approved);
   if(!all.length){c.innerHTML='<div class="empty-msg">暂无留言</div>';return}
-  let html='<table><tr><th>用户</th><th>内容</th><th>文章</th><th>时间</th><th>状态</th><th>操作</th></tr>';
+  let html='<table><tr><th>用户</th><th>等级</th><th>内容</th><th>文章</th><th>时间</th><th>状态</th><th>操作</th></tr>';
   all.forEach(cmt=>{
-    html+='<tr><td>'+cmt.user+'</td><td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+cmt.content+'</td><td style="font-size:12px;color:#5a7a90">'+(cmt.articleTitle||'-').substring(0,20)+'</td><td style="font-size:11px;color:#5a7a90">'+cmt.time+'</td><td><span class="badge '+(cmt.approved?'badge-yes':'badge-no')+'">'+(cmt.approved?'已通过':'待审核')+'</span></td><td>'+
+    const levelBadge=cmt.memberLevel?'<span class="badge" style="background:rgba(0,200,255,0.12);color:#00c8ff;font-size:10px">'+(MEMBER_LABELS[cmt.memberLevel]||cmt.memberLevel)+'</span>':'<span style="color:#5a7a90;font-size:11px">访客</span>';
+    html+='<tr><td>'+cmt.user+'</td><td>'+levelBadge+'</td><td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+cmt.content+'</td><td style="font-size:12px;color:#5a7a90">'+(cmt.articleTitle||'-').substring(0,20)+'</td><td style="font-size:11px;color:#5a7a90">'+cmt.time+'</td><td><span class="badge '+(cmt.approved?'badge-yes':'badge-no')+'">'+(cmt.approved?'已通过':'待审核')+'</span></td><td>'+
       (!cmt.approved?'<button class="sm success" onclick="approveComment(\''+cmt.id+'\',true)">通过</button> ':'')+
       '<button class="sm danger" onclick="deleteComment(\''+cmt.id+'\')">删除</button></td></tr>';
   });
@@ -621,6 +691,43 @@ function switchCommentTab(el,filter){
 
 async function approveComment(id,approved){await api('/api/comments/approve',{id,approved});await refreshData();renderComments();updateStats()}
 async function deleteComment(id){if(!confirm('确认删除？'))return;await api('/api/comments/delete',{id});await refreshData();renderComments();updateStats()}
+
+// ===== MEMBERS =====
+const MEMBER_LABELS={normal:'普通会员',vip1:'VIP会员',vip2:'黄金VIP',vip3:'钻石VIP'};
+let memberFilter='all';
+
+function switchMemberTab(el,filter){
+  document.querySelectorAll('#page-members .tab-bar button').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');memberFilter=filter;renderMembers();
+}
+
+function renderMembers(){
+  if(!hasAccess(['superadmin','content'])){document.getElementById('memberList').innerHTML='';return}
+  const c=document.getElementById('memberList');
+  let members=data.members||[];
+  if(memberFilter!=='all')members=members.filter(m=>m.level===memberFilter);
+  if(!members.length){c.innerHTML='<div class="empty-msg">暂无会员</div>';return}
+  let html='<table><tr><th>用户名</th><th>等级</th><th>积分</th><th>留言数</th><th>注册时间</th><th>操作</th></tr>';
+  members.forEach(m=>{
+    const levelOpts=Object.entries(MEMBER_LABELS).map(([k,v]) => '<option value="'+k+'"'+(m.level===k?' selected':'')+'>'+v+'</option>').join('');
+    html+='<tr><td>'+m.user+'</td><td><select class="member-level-select" data-id="'+m.id+'" onchange="changeMemberLevel(\''+m.id+'\',this.value)" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:4px;color:#e0e0e0;padding:4px 8px;font-size:12px">'+levelOpts+'</select></td><td>'+m.points+'</td><td>'+(m.commentCount||0)+'</td><td style="font-size:12px;color:#5a7a90">'+(m.registerDate||'-')+'</td><td><button class="sm danger" onclick="deleteMember(\''+m.id+'\',\''+m.user+'\')">删除</button></td></tr>';
+  });
+  html+='</table>';c.innerHTML=html;
+}
+
+async function changeMemberLevel(id,level){
+  if(!confirm('确认修改该会员等级？')){renderMembers();return}
+  const r=await api('/api/members/update',{id,level});
+  if(r&&r.ok){await refreshData();renderMembers();updateStats()}
+  else{alert('修改失败');renderMembers()}
+}
+
+async function deleteMember(id,user){
+  if(!confirm('确认删除会员「'+user+'」？'))return;
+  const r=await api('/api/members/delete',{id});
+  if(r&&r.ok){await refreshData();renderMembers();updateStats()}
+  else alert('删除失败');
+}
 
 // ===== TEMPLATES =====
 function renderTemplates(){
@@ -705,13 +812,14 @@ function updateStats(){
   document.getElementById('statSections').textContent=roots;
   document.getElementById('statVideos').textContent=(data.videos||[]).length;
   document.getElementById('statComments').textContent=(data.articles||[]).reduce((s,a)=>(a.comments||[]).filter(c=>!c.approved).length+s,0);
+  document.getElementById('statMembers').textContent=(data.members||[]).length;
   document.getElementById('statTotalSections').textContent=total;
   document.getElementById('statRootSections').textContent=roots;
   document.getElementById('statChildSections').textContent=total-roots;
 }
 
 function loadAll(){
-  renderArticleSectionSelect();renderArticleTabs();renderArticleList();renderSections();renderVideos();renderComments();renderTemplates();renderAdmins();
+  renderArticleSectionSelect();renderArticleTabs();renderArticleList();renderSections();renderVideos();renderComments();renderMembers();renderTemplates();renderAdmins();
   updateStats();
 }
 
