@@ -1,20 +1,20 @@
 [
   {
-    "id": "t1",
-    "name": "暗色科技",
+    "active": false,
     "icon": "🚀",
-    "active": true
+    "id": "t1",
+    "name": "暗色科技"
   },
   {
-    "id": "t2",
-    "name": "中国水墨",
+    "active": true,
     "icon": "🎋",
-    "active": false
+    "id": "t2",
+    "name": "中国水墨"
   },
   {
-    "id": "t3",
-    "name": "极简白",
+    "active": false,
     "icon": "✨",
-    "active": false
+    "id": "t3",
+    "name": "极简白"
   }
 ]

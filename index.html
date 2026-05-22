@@ -4,570 +4,274 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cii.中国 — 喜爱中国</title>
+<style id="templateStyle">:root{--bg:#050510;--bg2:#0a0a1a;--bg3:rgba(255,255,255,0.03);--bg4:rgba(0,200,255,0.05);--primary:#00c8ff;--secondary:#7b61ff;--accent:#ff61d8;--text:#e0e0e0;--text2:#8aaec8;--text3:#5a7a90;--border:rgba(0,200,255,0.12);--card-bg:rgba(255,255,255,0.03);--card-hover:rgba(0,200,255,0.06);--header-bg:linear-gradient(180deg,rgba(5,5,16,0.95),transparent);--font:'Microsoft YaHei','PingFang SC',sans-serif;--radius:12px;--glow:0 0 30px rgba(0,200,255,0.08);--hero-grad:linear-gradient(135deg,#00c8ff,#7b61ff)}</style>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:#050510;color:#e0e0e0}
-
-/* ===== SLIDES ===== */
-.slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 80px;opacity:0;transition:opacity 0.9s ease;pointer-events:none;overflow:hidden}
-.slide.active{opacity:1;pointer-events:auto}
-.bg-grid{position:absolute;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(0,200,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,255,0.02) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
-.slide-bg-video{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:0.15;pointer-events:none;z-index:0}
-.slide>*{position:relative;z-index:1}
-
-/* particles */
-.particles{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
-.p{position:absolute;width:2px;height:2px;background:rgba(0,200,255,0.5);border-radius:50%;animation:float linear infinite}
-@keyframes float{0%{transform:translateY(0) scale(1);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-100vh) scale(0);opacity:0}}
-
-/* ===== HEADER ===== */
-.header{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:14px 32px;background:linear-gradient(180deg,rgba(5,5,16,0.9),transparent)}
-.logo-wrap{display:flex;align-items:center;gap:10px}
-.logo-wrap img{height:30px}
-.logo-wrap span{font-size:13px;color:#5a7a90;letter-spacing:2px}
-.header-right{display:flex;align-items:center;gap:16px;font-size:12px;color:#5a7a90}
-
-/* ===== TYPOGRAPHY ===== */
-h1{font-size:72px;font-weight:800;letter-spacing:10px;background:linear-gradient(135deg,#00c8ff,#7b61ff,#ff61d8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
-.section-title{font-size:50px;font-weight:700;letter-spacing:6px;background:linear-gradient(135deg,#00c8ff,#7b61ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;text-align:center}
-.section-en{font-size:15px;color:#5a7a90;letter-spacing:4px;text-transform:uppercase;margin-bottom:24px;text-align:center}
-.cover-sub{font-size:28px;color:#7b9bb8;letter-spacing:3px;margin-bottom:30px;text-align:center}
-.cover-tagline{font-size:14px;color:#3a5a70;letter-spacing:8px;border-top:1px solid rgba(255,255,255,0.06);padding-top:18px;margin-top:18px}
-
-/* ===== GRID & CARDS ===== */
-.grid{display:grid;gap:14px;width:100%;max-width:1100px}
-.grid-2{grid-template-columns:1fr 1fr}
-.grid-3{grid-template-columns:1fr 1fr 1fr}
-.grid-4{grid-template-columns:1fr 1fr 1fr 1fr}
-.card{background:rgba(255,255,255,0.03);border:1px solid rgba(0,200,255,0.1);border-radius:14px;padding:18px 22px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:all 0.4s;cursor:pointer;position:relative;overflow:hidden}
-.card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 50% 50%,rgba(0,200,255,0.03),transparent 60%);opacity:0;transition:opacity 0.4s}
-.card:hover{transform:translateY(-3px);border-color:#00c8ff;background:rgba(0,200,255,0.06)}
-.card:hover::before{opacity:1}
-.card-title{font-size:18px;font-weight:600;color:#00c8ff;margin-bottom:4px}
-.card-title-en{font-size:11px;color:#4a6a80;margin-bottom:8px;letter-spacing:1px}
-.card-item{font-size:13px;color:#b0c8e0;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
-.card-item:last-child{border-bottom:none}
-.card-item::before{content:"▹ ";color:#7b61ff}
-
-/* ===== VIDEO CARDS ===== */
-.video-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;width:100%;max-width:1000px}
-.video-card{background:rgba(0,0,0,0.4);border:1px solid rgba(0,200,255,0.15);border-radius:14px;overflow:hidden;transition:all 0.4s;cursor:pointer}
-.video-card:hover{border-color:#00c8ff;transform:translateY(-3px)}
-.video-card .thumb{aspect-ratio:16/9;background:linear-gradient(135deg,#0a0a2e,#1a0a3e);display:flex;align-items:center;justify-content:center;font-size:48px;position:relative}
-.video-card .thumb .play{position:absolute;width:50px;height:50px;border-radius:50%;background:rgba(0,200,255,0.2);border:2px solid rgba(0,200,255,0.5);display:flex;align-items:center;justify-content:center;font-size:20px;color:#00c8ff;transition:all 0.3s}
-.video-card:hover .play{background:rgba(0,200,255,0.4);transform:scale(1.1)}
-.video-card .info{padding:14px 18px}
-.video-card .info h4{font-size:15px;color:#e0e8f0;margin-bottom:4px}
-.video-card .info p{font-size:12px;color:#5a7a90}
-
-/* ===== NEWS LIST ===== */
-.news-list{width:100%;max-width:950px}
-.news-item{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.2s;border-radius:4px}
-.news-item:hover{background:rgba(0,200,255,0.03)}
-.news-item .date{font-size:11px;color:#4a6a80;min-width:75px;white-space:nowrap}
-.news-item .tag{font-size:10px;padding:2px 8px;border-radius:8px;background:rgba(0,200,255,0.08);color:#00c8ff;margin:0 10px;white-space:nowrap}
-.news-item .title{font-size:14px;color:#d0e0f0;flex:1}
-
-/* ===== FOOTER ===== */
-.footer-text{font-size:13px;color:#4a6a80;text-align:center;line-height:2}
-.footer-text strong{color:#7b9bb8}
-
-/* ===== CONTROLS ===== */
-.controls{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:18px;z-index:100;background:rgba(5,5,16,0.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:10px 24px;border-radius:30px;border:1px solid rgba(255,255,255,0.06)}
-.controls button{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#8aaec8;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:16px;transition:all 0.3s;display:flex;align-items:center;justify-content:center}
-.controls button:hover{background:rgba(0,200,255,0.12);border-color:#00c8ff;color:#00c8ff}
-.controls .tts-btn{width:auto;border-radius:20px;padding:0 18px;gap:6px;font-size:13px}
-.controls .tts-btn.speaking{background:rgba(0,200,255,0.15);border-color:#00c8ff;color:#00c8ff;animation:glow 1.5s infinite}
-@keyframes glow{0%,100%{box-shadow:0 0 8px rgba(0,200,255,0.15)}50%{box-shadow:0 0 22px rgba(0,200,255,0.4)}}
-.dots{display:flex;gap:6px}
-.dots span{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.1);cursor:pointer;transition:all 0.3s}
-.dots span.active{background:#00c8ff;width:22px;border-radius:3px}
-.page-num{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);font-size:12px;color:#3a5a70;letter-spacing:2px;z-index:100}
-.admin-link{position:fixed;bottom:28px;right:30px;z-index:100;font-size:10px;color:#2a4a60;opacity:0.35;transition:opacity 0.3s;text-decoration:none}
-.admin-link:hover{opacity:1;color:#4a7a90}
-
-/* ===== MODAL ===== */
-.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+a{color:var(--primary);text-decoration:none}
+a:hover{opacity:0.8}
+img{max-width:100%;height:auto;border-radius:6px}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-thumb{background:rgba(0,200,255,0.2);border-radius:3px}
+/* HEADER */
+.top-header{position:sticky;top:0;z-index:100;background:var(--header-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;padding:0 20px;height:56px;gap:16px}
+.logo{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--primary);letter-spacing:2px;white-space:nowrap}
+.logo img{height:28px}
+.top-nav{display:flex;gap:2px;flex:1;overflow-x:auto;margin:0 8px}
+.top-nav a{padding:5px 10px;border-radius:5px;font-size:12px;color:var(--text2);white-space:nowrap;cursor:pointer;transition:all 0.3s}
+.top-nav a:hover,.top-nav a.active{background:var(--bg4);color:var(--primary)}
+.header-right{font-size:11px;color:var(--text3);white-space:nowrap;display:flex;align-items:center;gap:8px}
+/* HERO */
+.hero{background:var(--bg2);padding:30px 20px;max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr;gap:16px}
+.hero-main{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform 0.3s;position:relative}
+.hero-main:hover{transform:translateY(-2px)}
+.hero-main img{width:100%;height:300px;object-fit:cover}
+.hero-main .hero-info{position:absolute;bottom:0;left:0;right:0;padding:60px 20px 16px;background:linear-gradient(transparent,rgba(0,0,0,0.9))}
+.hero-main .hero-info h2{font-size:22px;color:#fff;margin-bottom:4px}
+.hero-main .hero-info .meta{font-size:12px;color:var(--text3)}
+.hero-side{display:flex;flex-direction:column;gap:10px}
+.hero-side-item{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;cursor:pointer;transition:all 0.3s;flex:1;display:flex;flex-direction:column;justify-content:center}
+.hero-side-item:hover{background:var(--card-hover)}
+.hero-side-item h4{font-size:14px;color:var(--text);margin-bottom:2px}
+.hero-side-item .meta{font-size:11px;color:var(--text3)}
+/* SECTION TITLE */
+.section-wrap{max-width:1200px;margin:0 auto;padding:30px 20px 12px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-header h2{font-size:22px;background:var(--hero-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;letter-spacing:2px}
+.section-header .more{font-size:12px;color:var(--text3);cursor:pointer}
+.section-header .more:hover{color:var(--primary)}
+/* ARTICLE GRID */
+.article-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.article-card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all 0.4s}
+.article-card:hover{transform:translateY(-3px);background:var(--card-hover);box-shadow:var(--glow)}
+.article-card .card-img{width:100%;height:160px;object-fit:cover;display:block}
+.article-card .card-body{padding:14px}
+.article-card .card-body h3{font-size:15px;margin-bottom:4px;line-height:1.5}
+.article-card .card-body .meta{font-size:11px;color:var(--text3)}
+.article-card .card-body .desc{font-size:12px;color:var(--text2);margin-top:6px;line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+/* ARTICLE LIST */
+.article-list{display:flex;flex-direction:column;gap:6px}
+.article-list-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;cursor:pointer;transition:background 0.2s}
+.article-list-item:hover{background:var(--bg4)}
+.article-list-item img{width:80px;height:56px;object-fit:cover;border-radius:4px}
+.article-list-item .info{flex:1;min-width:0}
+.article-list-item .info h4{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.article-list-item .info .meta{font-size:11px;color:var(--text3)}
+.article-list-item .badge{font-size:10px;padding:1px 6px;border-radius:4px;background:var(--bg4);color:var(--primary);white-space:nowrap}
+/* VIDEO */
+.video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.video-card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all 0.4s}
+.video-card:hover{transform:translateY(-3px);box-shadow:var(--glow)}
+.video-card .vthumb{aspect-ratio:16/9;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:42px;position:relative}
+.video-card .vthumb .play-btn{position:absolute;width:44px;height:44px;border-radius:50%;background:rgba(0,200,255,0.15);border:2px solid rgba(0,200,255,0.4);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--primary);transition:all 0.3s}
+.video-card:hover .play-btn{background:rgba(0,200,255,0.3);transform:scale(1.1)}
+.video-card .vinfo{padding:12px 14px}
+.video-card .vinfo h4{font-size:14px;margin-bottom:2px}
+.video-card .vinfo p{font-size:11px;color:var(--text3)}
+/* FOOTER */
+.footer{background:var(--bg2);border-top:1px solid var(--border);padding:30px 20px;text-align:center;font-size:12px;color:var(--text3);line-height:2;margin-top:10px}
+.footer strong{color:var(--text2)}
+.admin-link{position:fixed;bottom:16px;right:20px;font-size:10px;color:var(--text3);opacity:0.35;z-index:100;text-decoration:none;transition:opacity 0.3s}
+.admin-link:hover{opacity:1}
+/* MODAL */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .modal-overlay.open{display:flex}
-.modal-box{background:#0a0a1a;border:1px solid rgba(0,200,255,0.15);border-radius:18px;width:90%;max-width:850px;max-height:82vh;overflow-y:auto;padding:36px 40px;position:relative}
+.modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);width:90%;max-width:800px;max-height:88vh;overflow-y:auto;padding:28px 32px;position:relative}
 .modal-box::-webkit-scrollbar{width:4px}
-.modal-box::-webkit-scrollbar-thumb{background:rgba(0,200,255,0.25);border-radius:2px}
-.modal-close{position:absolute;top:14px;right:18px;font-size:26px;cursor:pointer;color:#4a6a80;transition:color 0.3s;background:none;border:none}
-.modal-close:hover{color:#00c8ff}
-.modal-title{font-size:28px;font-weight:700;color:#00c8ff;margin-bottom:4px}
-.modal-en{font-size:13px;color:#4a6a80;margin-bottom:20px}
-.modal-article{padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
-.modal-article:last-child{border-bottom:none}
-.modal-article h3{font-size:17px;color:#d0e0f0;margin-bottom:4px}
-.modal-article p{font-size:13px;color:#7b9bb8;line-height:1.8}
-.modal-article .meta{font-size:11px;color:#4a6a80;margin-top:4px}
-.modal-video-box{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;margin:16px 0}
-.modal-video-box iframe{position:absolute;top:0;left:0;width:100%;height:100%}
-
-/* ===== RESPONSIVE ===== */
+.modal-box::-webkit-scrollbar-thumb{background:rgba(0,200,255,0.2);border-radius:2px}
+.modal-close{position:absolute;top:12px;right:16px;font-size:24px;cursor:pointer;color:var(--text3);background:none;border:none;transition:color 0.3s}
+.modal-close:hover{color:var(--primary)}
+.modal-article-title{font-size:22px;font-weight:700;color:var(--primary);margin-bottom:4px}
+.modal-article-meta{font-size:12px;color:var(--text3);margin-bottom:12px}
+.modal-article-body{font-size:14px;line-height:2;color:var(--text2)}
+.modal-article-body img{display:block;margin:12px auto;max-height:400px;border-radius:8px}
+.modal-article-body .video-embed{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px;margin:12px 0}
+.modal-article-body .video-embed iframe{position:absolute;top:0;left:0;width:100%;height:100%}
+/* comment section in modal */
+.comment-section{margin-top:20px;padding-top:14px;border-top:1px solid var(--border)}
+.comment-section h4{font-size:14px;margin-bottom:8px;color:var(--text2)}
+.comment-input{display:flex;gap:8px;margin-bottom:10px}
+.comment-input input{flex:1;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 12px;font-size:13px;outline:none;transition:border-color 0.3s}
+.comment-input input:focus{border-color:var(--primary)}
+.comment-input button{padding:8px 16px;background:var(--hero-grad);border:none;color:#fff;border-radius:6px;cursor:pointer;font-size:13px}
+.comment-item{padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.comment-item:last-child{border-bottom:none}
+.comment-item .meta{font-size:11px;color:var(--text3)}
+.comment-item .content{font-size:13px;margin-top:2px}
+/* RESPONSIVE */
 @media(max-width:768px){
-.slide{padding:30px 16px}
-h1{font-size:32px;letter-spacing:4px}
-.section-title{font-size:26px;letter-spacing:3px}
-.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
-.card{padding:12px 14px}
-.header{padding:10px 14px}
-.header-right{display:none}
-.logo-wrap img{height:20px}
-.video-grid{grid-template-columns:1fr}
-.controls{flex-wrap:wrap;gap:8px;padding:8px 14px;bottom:16px;width:90%}
-.page-num{bottom:72px}
-.admin-link{bottom:16px;right:14px}
-.modal-box{padding:24px;width:95%}
-.cover-sub{font-size:20px}
-}
+.hero{grid-template-columns:1fr}.hero-main img{height:200px}.top-nav{display:none}.section-wrap{padding:16px 12px}.article-grid{grid-template-columns:1fr}.video-grid{grid-template-columns:1fr}.modal-box{padding:16px}}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="logo-wrap"><img src="logo.png" alt="Cii"><span>Cii.中国</span></div>
-  <div class="header-right"><span id="dateDisplay"></span><span>✦</span></div>
-</div>
-
-<!-- PARTICLES -->
-<div class="particles" id="particles"></div>
-
-<!-- ==================== SLIDES ==================== -->
-
-<!-- 1: COVER -->
-<div class="slide active" data-slide="0">
-  <div class="bg-grid"></div>
-  <h1>Cii.中国</h1>
-  <div class="cover-sub">喜爱中国 · I Love China</div>
-  <div class="cover-tagline">✦ 地外文明 · 蓝星体系 · 后稀缺时代 ✦</div>
-</div>
-
-<!-- 2: 时政深一度 -->
-<div class="slide" data-slide="1">
-  <div class="bg-grid"></div>
-  <div class="section-title">时政深一度</div>
-  <div class="section-en">Political Depth</div>
-  <div class="grid grid-4" style="max-width:900px">
-    <div class="card" onclick="openModal('时政深一度','In-Depth Politics','shizheng')">
-      <div class="card-title">时政深一度</div>
-      <div class="card-title-en">In-Depth Politics</div>
-      <div class="card-item">习近平强调以更大力度加强基础研究 提升原始创新能力</div>
-      <div class="card-item">习近平强调"义乌发展经验"：因地制宜探索高质量发展之路</div>
-    </div>
-    <div class="card" onclick="openModal('烽火铁甲','Iron Armor','fenghuo')">
-      <div class="card-title">烽火铁甲</div>
-      <div class="card-title-en">Iron Armor</div>
-      <div class="card-item">中国海军宣传片引猜想：第四艘航母是否已"出鞘"？</div>
-    </div>
-    <div class="card" onclick="openModal('经纬脉搏','Economic Pulse','jingwei')">
-      <div class="card-title">经纬脉搏</div>
-      <div class="card-title-en">Economic Pulse</div>
-      <div class="card-item">产业转移与内陆崛起：中国经济地理重塑</div>
-    </div>
-    <div class="card" onclick="openModal('社稷春秋','Society Chronicle','sheji')">
-      <div class="card-title">社稷春秋</div>
-      <div class="card-title-en">Society Chronicle</div>
-      <div class="card-item">宝山区委第十三轮巡察进驻5家单位</div>
-    </div>
+<header class="top-header">
+  <div class="header-inner">
+    <div class="logo"><img src="logo.png" alt="Cii">Cii.中国</div>
+    <div class="top-nav" id="topNav"></div>
+    <div class="header-right"><span id="dateDisplay"></span></div>
   </div>
-</div>
+</header>
 
-<!-- 3: 后稀缺时代 -->
-<div class="slide" data-slide="2">
-  <div class="bg-grid"></div>
-  <div class="section-title">后稀缺时代</div>
-  <div class="section-en">Post-Scarcity Era</div>
-  <div class="grid grid-2" style="max-width:1000px">
-    <div class="card" onclick="openModal('科技双刃','Technology Double-Edged','keji')">
-      <div class="card-title">科技双刃</div>
-      <div class="card-title-en">Technology Double-Edged</div>
-      <div class="card-item">智能革命 — AI重塑生产力格局</div>
-      <div class="card-item">基因边界 — 基因编辑伦理与法规探索</div>
-      <div class="card-item">虚实重构 — 元宇宙与数字孪生</div>
-      <div class="card-item">能源革命 — 核聚变与清洁能源突破</div>
-      <div class="card-item">地缘裂变 — 科技地缘博弈</div>
-      <div class="card-item">地球工程 — 中国可重复使用航天器第六次发射成功</div>
-    </div>
-    <div class="card" onclick="openModal('裂变重溯','Fission Retrospection','liebian')">
-      <div class="card-title">裂变重溯</div>
-      <div class="card-title-en">Fission Retrospection</div>
-      <div class="card-item">供应链战 — 全球供应链重构与中国产业转移</div>
-      <div class="card-item">多边新生 — 多边主义新格局</div>
-      <div class="card-item">自媒体悖论 — 信息传播的机遇与挑战</div>
-      <div class="card-item">认知升维 — 认知战与信息素养</div>
-      <div class="card-item">虚实文明 — 数字文明新形态</div>
-      <div class="card-item">奇点信仰 — 技术奇点的哲学思考</div>
-    </div>
-  </div>
-</div>
+<section class="hero" id="heroSection"></section>
 
-<!-- 4: 蓝星体系 -->
-<div class="slide" data-slide="3">
-  <div class="bg-grid"></div>
-  <div class="section-title">蓝星体系</div>
-  <div class="section-en">Blue Earth System</div>
-  <div class="grid grid-2" style="max-width:1000px">
-    <div class="card" onclick="openModal('资源配置','Resource Allocation','ziyuan')">
-      <div class="card-title">资源配置</div>
-      <div class="card-title-en">Resource Allocation</div>
-      <div class="card-item">基因溯源 — 生命起源与基因资源</div>
-      <div class="card-item">资源角力 — 元首外交春潮涌：多国领导人密集访华</div>
-      <div class="card-item">生态武器 — 生态安全与战略资源</div>
-      <div class="card-item">阵营博弈 — 国际阵营分化与合作</div>
-      <div class="card-item">代理人战 — 地缘代理人博弈</div>
-      <div class="card-item">文明公约 — 中巴建交75周年：巴基斯坦总统最高礼仪致敬中国开国领袖</div>
-    </div>
-    <div class="card" onclick="openModal('冲突重构','Conflict Restructuring','chongtu')">
-      <div class="card-title">冲突重构</div>
-      <div class="card-title-en">Conflict Restructuring</div>
-      <div class="card-item">异能觉醒 — 新质生产力崛起</div>
-      <div class="card-item">红岸突围 — 中国科技自主创新之路</div>
-      <div class="card-item">升维实验 — 日本防卫报告重构对华认知</div>
-      <div class="card-item">星际建构 — 太空治理新秩序</div>
-      <div class="card-item">禁区法则 — 国际法与国际规则博弈</div>
-      <div class="card-item">平等转型 — 全球治理体系改革</div>
-    </div>
-  </div>
-</div>
+<div id="contentSections"></div>
 
-<!-- 5: 地外文明 -->
-<div class="slide" data-slide="4">
-  <div class="bg-grid"></div>
-  <div class="section-title">地外文明</div>
-  <div class="section-en">Extraterrestrial Civilization</div>
-  <div class="grid grid-2" style="max-width:1000px">
-    <div class="card" onclick="openModal('科学探索','Scientific Exploration','kexue')">
-      <div class="card-title">科学探索</div>
-      <div class="card-title-en">Scientific Exploration</div>
-      <div class="card-item">深空探秘 — 中国深空探测计划</div>
-      <div class="card-item">行星考古 — 中国天问三号完成火星采样关键突破</div>
-      <div class="card-item">观测矩阵 — 中国科学家发布天文AI模型"星衍"：发现160余个宇宙早期星系</div>
-      <div class="card-item">异星生态 — 2026奥巴马掀桌：外星人真实存在？</div>
-      <div class="card-item">极端适应 — 极端环境生命适应机制</div>
-      <div class="card-item">生物标踪 — 宇宙生命信号追踪</div>
-    </div>
-    <div class="card" onclick="openModal('文明博弈','Civilization Game','wenming')">
-      <div class="card-title">文明博弈</div>
-      <div class="card-title-en">Civilization Game</div>
-      <div class="card-item">接触准则 — 地外文明接触伦理框架</div>
-      <div class="card-item">冲突预案 — 跨越政治分歧：美俄宇航员共赴太空站</div>
-      <div class="card-item">信仰重构 — 中国将成为全球精神复兴摇篮</div>
-      <div class="card-item">联合探秘 — 国际太空合作新篇章</div>
-      <div class="card-item">公民科探 — 公众科学参与太空探索</div>
-      <div class="card-item">科传平衡 — 科学传播与认知平衡</div>
-    </div>
-  </div>
-</div>
+<footer class="footer">
+  <strong>Cii.中国 — 喜爱中国</strong><br>
+  中国 · 上海 · 宝山 · 《喜爱中国》执编中心<br>
+  E-mail：Axiomis@qq.com | 通话请先短信预约：+86-132-8807-8868<br>
+  主办：上海第三只眼传播发展有限公司<br>
+  版权所有 未经书面授权禁止使用
+</footer>
 
-<!-- 6: 新闻头条 -->
-<div class="slide" data-slide="5">
-  <div class="bg-grid"></div>
-  <div class="section-title">新闻头条</div>
-  <div class="section-en">Headline News</div>
-  <div class="news-list" style="max-width:900px" id="newsContainer">
-    <div class="news-item" onclick="openModal('习近平强调以更大力度加强基础研究 提升原始创新能力','时政深一度 | 2026-04-30','news0')"><span class="date">2026-04-30</span><span class="tag">时政深一度</span><span class="title">习近平强调以更大力度加强基础研究 提升原始创新能力</span></div>
-    <div class="news-item" onclick="openModal('中巴建交75周年：巴基斯坦总统以最高礼仪致敬中国开国领袖','文明公约 | 2026-04-28','news1')"><span class="date">2026-04-28</span><span class="tag">文明公约</span><span class="title">中巴建交75周年：巴基斯坦总统以最高礼仪致敬中国开国领袖</span></div>
-    <div class="news-item" onclick="openModal('元首外交春潮涌：多国领导人密集访华释放合作强信号','资源角力 | 2026-04-22','news2')"><span class="date">2026-04-22</span><span class="tag">资源角力</span><span class="title">元首外交春潮涌：多国领导人密集访华释放合作强信号</span></div>
-    <div class="news-item" onclick="openModal('日本防卫报告重构对华认知','冲突重构 | 2026-04-19','news3')"><span class="date">2026-04-19</span><span class="tag">冲突重构</span><span class="title">日本防卫报告重构对华认知 以中俄朝系统替代单一国家视角</span></div>
-    <div class="news-item" onclick="openModal('卫报称中国产业转移是第三线回归 官方回应：差异巨大','裂变重溯 | 2026-04-02','news4')"><span class="date">2026-04-02</span><span class="tag">裂变重溯</span><span class="title">卫报称中国产业转移是第三线回归 官方回应：差异巨大</span></div>
-    <div class="news-item" onclick="openModal('美英多份权威文件未见涉华影响力操作表述','自媒体悖论 | 2026-03-27','news5')"><span class="date">2026-03-27</span><span class="tag">自媒体悖论</span><span class="title">美英多份权威文件未见涉华"影响力操作"表述</span></div>
-    <div class="news-item" onclick="openModal('中国将成为全球精神复兴摇篮','信仰重构 | 2026-03-19','news6')"><span class="date">2026-03-19</span><span class="tag">信仰重构</span><span class="title">中国将成为全球精神复兴摇篮</span></div>
-    <div class="news-item" onclick="openModal('中国科学家发布天文AI模型星衍','观测矩阵 | 2026-02-21','news7')"><span class="date">2026-02-21</span><span class="tag">观测矩阵</span><span class="title">中国科学家发布天文AI模型"星衍"：探测深度跃升1星等</span></div>
-  </div>
-</div>
+<a class="admin-link" href="admin" target="_blank">⚙ 管理</a>
 
-<!-- 7: 视频中心 -->
-<div class="slide" data-slide="6">
-  <div class="bg-grid"></div>
-  <div class="section-title">视频中心</div>
-  <div class="section-en">Video Center</div>
-  <div class="video-grid" id="videoContainer">
-    <div class="video-card" onclick="openVideoModal('中国航天：星辰大海','🚀','about:blank')">
-      <div class="thumb"><span class="play">▶</span>🚀</div>
-      <div class="info"><h4>中国航天：星辰大海</h4><p>中国航天事业发展历程</p></div>
-    </div>
-    <div class="video-card" onclick="openVideoModal('未来科技趋势','🤖','about:blank')">
-      <div class="thumb"><span class="play">▶</span>🤖</div>
-      <div class="info"><h4>未来科技趋势</h4><p>人工智能与未来生活</p></div>
-    </div>
-  </div>
-</div>
-
-<!-- 8: 破茧者说 -->
-<div class="slide" data-slide="7">
-  <div class="bg-grid"></div>
-  <div class="section-title">破茧者说</div>
-  <div class="section-en">Breaking the Cocoon Speaks</div>
-  <div class="grid grid-2" style="max-width:800px">
-    <div class="card" onclick="openModal('伤痕铸就星辰的归国之路','The Star\'s Return — Qian Xuesen','qianxuesen')">
-      <div class="card-title">伤痕铸就星辰的归国之路</div>
-      <div class="card-title-en">The Star's Return — Qian Xuesen</div>
-      <div class="card-item">钱学森：中国航天之父的归国之路，伤痕铸就星辰</div>
-    </div>
-    <div class="card" onclick="openModal('馒头与星辰','Bread and Stars','mantou')">
-      <div class="card-title">馒头与星辰</div>
-      <div class="card-title-en">Bread and Stars</div>
-      <div class="card-item">平凡与伟大的辩证：如何在日常中追寻星空</div>
-    </div>
-    <div class="card" onclick="openModal('百元美钞上的王冠','The Crown on the Hundred-Dollar Bill','crown')">
-      <div class="card-title">百元美钞上的王冠</div>
-      <div class="card-title-en">The Crown on the Hundred-Dollar Bill</div>
-      <div class="card-item">符号与权力：货币设计背后的文明叙事</div>
-    </div>
-    <div class="card" onclick="openModal('水的囚徒','Prisoner of Water — Viktor Schauberger','water')">
-      <div class="card-title">水的囚徒</div>
-      <div class="card-title-en">Prisoner of Water — Viktor Schauberger</div>
-      <div class="card-item">维克多·舍费尔：水的奥秘与自然能源的探索者</div>
-    </div>
-  </div>
-</div>
-
-<!-- 9: 心灯无界 -->
-<div class="slide" data-slide="8">
-  <div class="bg-grid"></div>
-  <div class="section-title">心灯无界</div>
-  <div class="section-en">Heart Light Without Boundaries</div>
-  <div class="footer-text" style="margin-top:36px">
-    <strong>Cii.中国 — 喜爱中国</strong><br>
-    中国 · 上海 · 宝山 · 《喜爱中国》执编中心<br>
-    E-mail：Axiomis@qq.com<br>
-    版权所有 未经书面授权禁止使用<br>
-    主办：上海第三只眼传播发展有限公司<br>
-    通话请先短信预约：+86-132-8807-8868<br>
-    Please text to schedule an appointment first.
-  </div>
-</div>
-
-<!-- ===== MODAL ===== -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal()">&times;</button>
-    <div class="modal-title" id="modalTitle"></div>
-    <div class="modal-en" id="modalEn"></div>
     <div id="modalContent"></div>
   </div>
 </div>
 
-<!-- ===== CONTROLS ===== -->
-<div class="page-num" id="pageNum">1 / 9</div>
-<div class="controls">
-  <button id="prevBtn" title="上一页">◀</button>
-  <div class="dots" id="dots"></div>
-  <button id="nextBtn" title="下一页">▶</button>
-  <button class="tts-btn" id="ttsBtn" title="中英双语语音播报">🔊 <span>双语</span></button>
-</div>
-
-<a class="admin-link" href="admin" target="_blank">⚙</a>
-
 <script>
-// ===== INIT =====
-const slides=document.querySelectorAll('.slide');
-const total=slides.length;
-let current=0,autoTimer=null,isSpeaking=false;
-const synth=window.speechSynthesis;
+let sections={},articles=[],videos=[];
+let week='日一二三四五六';
 
-const dotsContainer=document.getElementById('dots');
-for(let i=0;i<total;i++){
-  const d=document.createElement('span');
-  if(i===0)d.classList.add('active');
-  d.addEventListener('click',()=>goTo(i));
-  dotsContainer.appendChild(d);
+async function api(url,body){
+  try{
+    const opt={method:'GET',headers:{'Content-Type':'application/json'}};
+    if(body){opt.method='POST';opt.body=JSON.stringify(body)}
+    const r=await fetch(url,opt);return r.json();
+  }catch(e){return null}
 }
 
-function goTo(n){
-  if(n<0)n=total-1;if(n>=total)n=0;current=n;updateDisplay();resetAuto();
+async function loadData(){
+  const r=await api('/api/frontend-data');
+  if(r){articles=r.articles||[];sections=r.sections||{};videos=r.videos||[]}
+  const t=await api('/api/template/css');
+  if(t&&t.css)document.getElementById('templateStyle').textContent=t.css;
 }
 
-function updateDisplay(){
-  slides.forEach((s,i)=>s.classList.toggle('active',i===current));
-  document.querySelectorAll('.dots span').forEach((d,i)=>d.classList.toggle('active',i===current));
-  document.getElementById('pageNum').textContent=(current+1)+' / '+total;
+function renderNav(){
+  const nav=document.getElementById('topNav');
+  const keys=Object.keys(sections);
+  nav.innerHTML=keys.map(k=>'<a onclick="scrollToSection(\''+k+'\')">'+sections[k]+'</a>').join('');
+  if(videos.length)nav.innerHTML+='<a onclick="document.getElementById(\'videoSection\').scrollIntoView({behavior:\'smooth\'})">视频中心</a>';
 }
 
-document.getElementById('prevBtn').addEventListener('click',()=>goTo(current-1));
-document.getElementById('nextBtn').addEventListener('click',()=>goTo(current+1));
-document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')goTo(current-1);if(e.key==='ArrowRight')goTo(current+1)});
+function scrollToSection(key){
+  const el=document.getElementById('sec-'+key);
+  if(el)el.scrollIntoView({behavior:'smooth'});
+}
 
-function resetAuto(){clearInterval(autoTimer);autoTimer=setInterval(()=>{if(!isSpeaking)goTo(current+1)},8000)}
+function renderHero(){
+  const container=document.getElementById('heroSection');
+  const featured=articles.filter(a=>a.featured);
+  if(!featured.length){container.innerHTML='';return}
+  const main=featured[0];
+  const side=featured.slice(1,4);
+  container.innerHTML=
+    '<div class="hero-main" onclick="openArticle(\''+main.id+'\')">'+
+    (main.images&&main.images[0]?'<img src="'+main.images[0]+'" onerror="this.style.display=\'none\'" alt="">':'<div style="height:300px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:48px">'+(sections[main.section]||'📰')+'</div>')+
+    '<div class="hero-info"><h2>'+main.title+'</h2><div class="meta">'+(main.source?main.source+' · ':'')+(main.date||'')+'</div></div></div>'+
+    '<div class="hero-side">'+
+    side.map(a=>'<div class="hero-side-item" onclick="openArticle(\''+a.id+'\')"><h4>'+a.title+'</h4><div class="meta">'+(a.date||'')+'</div></div>').join('')+
+    '</div>';
+}
 
-const now=new Date();
-const week='日一二三四五六';
-document.getElementById('dateDisplay').textContent=now.getFullYear()+'年'+String(now.getMonth()+1).padStart(2,'0')+'月'+String(now.getDate()).padStart(2,'0')+'日 周'+week[now.getDay()];
-
-// ===== PARTICLES =====
-(function(){
-  const c=document.getElementById('particles');
-  for(let i=0;i<30;i++){
-    const p=document.createElement('div');p.className='p';
-    p.style.left=Math.random()*100+'%';
-    p.style.bottom='-10px';
-    p.style.width=p.style.height=(1+Math.random()*2)+'px';
-    p.style.animationDuration=(10+Math.random()*20)+'s';
-    p.style.animationDelay=(Math.random()*15)+'s';
-    c.appendChild(p);
-  }
-})();
-
-// ===== DETAIL DATA =====
-const detailData={
-shizheng:{title:'时政深一度',articles:[{h:'习近平强调以更大力度加强基础研究 提升原始创新能力',p:'中共中央总书记、国家主席、中央军委主席习近平近日在考察时强调，要瞄准世界科技前沿，以更大力度加强基础研究，提升原始创新能力，为实现高水平科技自立自强提供有力支撑。',m:'2026-04-30 | 新华社'},{h:'习近平强调"义乌发展经验"：因地制宜探索高质量发展之路',p:'习近平在浙江考察时指出，义乌的发展经验是中国特色社会主义在县域层面的生动实践，要因地制宜探索高质量发展之路。',m:'2026-04-25 | 新华社'}]},
-fenghuo:{title:'烽火铁甲',articles:[{h:'中国海军宣传片引猜想：第四艘航母是否已"出鞘"？',p:'中国海军最新发布的宣传片中出现的新航母画面引发广泛关注。分析人士指出，这可能是中国第四艘航母的首次公开亮相。',m:'2026-04-28 | 央视军事'}]},
-jingwei:{title:'经纬脉搏',articles:[{h:'产业转移与内陆崛起：中国经济地理重塑',p:'随着全球供应链重构和国内产业政策调整，中国内陆地区正迎来新一轮发展机遇。产业向内陆转移优化了全国生产力布局。',m:'2026-04-20 | 经济日报'}]},
-sheji:{title:'社稷春秋',articles:[{h:'宝山区委第十三轮巡察进驻5家单位',p:'根据区委统一部署，十三届区委第十三轮巡察工作全面启动，5个巡察组分别进驻相关单位开展常规巡察。',m:'2026-04-18 | 宝山发布'}]},
-keji:{title:'科技双刃',articles:[{h:'智能革命 — AI重塑生产力格局',p:'人工智能正在深刻改变全球生产力格局。从智能制造到智慧城市，AI的应用边界不断拓展。',m:'2026-04-15'},{h:'基因边界 — 基因编辑伦理与法规探索',p:'随着CRISPR技术成熟，基因编辑在疾病治疗领域展现巨大潜力，但伦理争议促使各国加快相关立法。',m:'2026-04-10'},{h:'地球工程 — 可重复使用航天器第六次发射成功',p:'中国可重复使用航天器成功完成第六次发射任务，构建天地协同太空运输新生态。',m:'2026-02-08'}]},
-liebian:{title:'裂变重溯',articles:[{h:'供应链战 — 全球供应链重构与中国产业转移',p:'卫报称中国产业转移是第三线回归，官方回应：差异巨大，勿过度解读。',m:'2026-04-02'},{h:'自媒体悖论 — 美英权威文件未见涉华影响力操作表述',p:'美国国务院战略计划提及中国23次，但未涉及"影响力操作"框架。2月相关报告实为自媒体杜撰。',m:'2026-03-27'}]},
-ziyuan:{title:'资源配置',articles:[{h:'资源角力 — 元首外交春潮涌',p:'多国领导人密集访华，元首外交进入高潮。各方在经贸合作、气候变化等议题上寻求共识。',m:'2026-04-22'},{h:'文明公约 — 中巴建交75周年',p:'巴基斯坦总统以最高礼仪致敬中国开国领袖，推动中巴全天候战略合作伙伴关系发展。',m:'2026-04-28'}]},
-chongtu:{title:'冲突重构',articles:[{h:'升维实验 — 日本防卫报告重构对华认知',p:'日本最新防卫报告以中俄朝系统替代以往单一国家视角，将对东亚安全格局产生深远影响。',m:'2026-04-19'}]},
-kexue:{title:'科学探索',articles:[{h:'行星考古 — 天问三号火星采样关键突破',p:'中国天问三号完成火星采样关键突破，全球首个地外样本返回进入倒计时。',m:'2026-02-01'},{h:'观测矩阵 — 天文AI模型"星衍"',p:'中国科学家发布天文AI模型"星衍"，发现160余个宇宙早期星系。',m:'2026-02-21'}]},
-wenming:{title:'文明博弈',articles:[{h:'信仰重构 — 中国将成为全球精神复兴摇篮',p:'东方文明蕴含的哲学智慧为全球精神复兴提供重要启示。',m:'2026-03-19'},{h:'冲突预案 — 美俄宇航员共赴太空站',p:'跨越政治分歧，美俄宇航员共同执行太空站任务。',m:'2026-02-15'}]},
-qianxuesen:{title:'伤痕铸就星辰的归国之路',articles:[{h:'钱学森：中国航天之父',p:'1955年，钱学森历经五年艰难谈判和软禁回到祖国。领导创建了中国第一个火箭导弹研究机构。',m:'破茧者说'}]},
-mantou:{title:'馒头与星辰',articles:[{h:'平凡与伟大的辩证',p:'真正的伟大不在于脱离日常，而在于在日常中坚守对美好的追求。',m:'破茧者说'}]},
-crown:{title:'百元美钞上的王冠',articles:[{h:'符号与权力',p:'货币不仅是交换媒介，更是文明叙事的载体。百元美钞上的符号背后隐藏着深刻的权力叙事。',m:'破茧者说'}]},
-water:{title:'水的囚徒',articles:[{h:'维克多·舍费尔：水的奥秘',p:'奥地利自然学家维克多·舍费尔揭示水在自然温度下螺旋运动产生的能量。',m:'破茧者说'}]}
-};
-
-// News detail data for modal
-const newsDetail={
-  news0:{t:'习近平强调以更大力度加强基础研究 提升原始创新能力',c:'中共中央总书记、国家主席、中央军委主席习近平近日在考察时强调，要瞄准世界科技前沿，以更大力度加强基础研究，提升原始创新能力，为实现高水平科技自立自强提供有力支撑。',tg:'时政深一度',d:'2026-04-30'},
-  news1:{t:'中巴建交75周年',c:'在庆祝中巴建交75周年之际，巴基斯坦总统以最高礼仪向中国开国领袖致敬，体现两国深厚情谊。',tg:'文明公约',d:'2026-04-28'},
-  news2:{t:'元首外交春潮涌',c:'多国领导人密集访华，元首外交进入高潮。各方在经贸合作、气候变化等重大议题上寻求共识。',tg:'资源角力',d:'2026-04-22'},
-  news3:{t:'日本防卫报告重构对华认知',c:'日本以中俄朝系统替代以往单一国家视角，反映安全战略重大转型，将对东亚安全格局产生深远影响。',tg:'冲突重构',d:'2026-04-19'},
-  news4:{t:'卫报称中国产业转移是第三线回归',c:'英国卫报将中国产业向内陆转移类比为"第三线回归"，官方回应称这是正常产业升级，差异巨大。',tg:'裂变重溯',d:'2026-04-02'},
-  news5:{t:'美英权威文件未见涉华影响力操作表述',c:'美国国务院战略计划提及中国23次但未涉及"影响力操作"框架，2月相关报告实为自媒体杜撰。',tg:'自媒体悖论',d:'2026-03-27'},
-  news6:{t:'中国将成为全球精神复兴摇篮',c:'东方文明蕴含的哲学智慧为全球精神复兴提供独特而宝贵的资源。',tg:'信仰重构',d:'2026-03-19'},
-  news7:{t:'中国科学家发布天文AI模型星衍',c:'中国科学家发布天文AI模型"星衍"，探测深度跃升1星等，发现160余个宇宙早期星系。',tg:'观测矩阵',d:'2026-02-21'}
-};
-
-function openModal(title,en,key){
-  clearInterval(autoTimer);
-  document.getElementById('modalTitle').textContent=title;
-  document.getElementById('modalEn').textContent=en;
+function renderContentSections(){
+  const container=document.getElementById('contentSections');
+  const keys=Object.keys(sections);
   let html='';
-  if(detailData[key]){
-    detailData[key].articles.forEach(a=>{
-      html+='<div class="modal-article"><h3>'+a.h+'</h3><p>'+a.p+'</p>';
-      if(a.m)html+='<div class="meta">'+a.m+'</div>';
-      html+='</div>';
-    });
-  }else if(newsDetail[key]){
-    const n=newsDetail[key];
-    html='<div class="modal-article"><p>'+n.c+'</p><div class="meta">'+n.d+' | '+n.tg+'</div></div>';
+  keys.forEach(k=>{
+    const secArticles=articles.filter(a=>a.section===k);
+    if(!secArticles.length)return;
+    html+='<div class="section-wrap" id="sec-'+k+'">'+
+      '<div class="section-header"><h2>'+(sections[k]||k)+'</h2></div>'+
+      '<div class="article-grid">'+
+      secArticles.map(a=>'<div class="article-card" onclick="openArticle(\''+a.id+'\')">'+
+        (a.images&&a.images[0]?'<img class="card-img" src="'+a.images[0]+'" onerror="this.style.display=\'none\'" alt="">':'')+
+        '<div class="card-body"><h3>'+a.title+'</h3><div class="meta">'+(a.source?'<span>'+a.source+'</span>':'')+(a.source&&a.date?' · ':'')+(a.date||'')+'</div>'+
+        '<div class="desc">'+(a.content||'').replace(/<[^>]+>/g,'').substring(0,120)+'</div></div></div>').join('')+
+      '</div></div>';
+  });
+  if(videos.length){
+    html+='<div class="section-wrap" id="videoSection">'+
+      '<div class="section-header"><h2>视频中心</h2></div>'+
+      '<div class="video-grid">'+
+      videos.map(v=>'<div class="video-card" onclick="openVideo(\''+v.id+'\')"><div class="vthumb">'+(v.thumb||'🎬')+'<span class="play-btn">▶</span></div><div class="vinfo"><h4>'+v.title+'</h4><p>'+(v.desc||'')+'</p></div></div>').join('')+
+      '</div></div>';
   }
-  document.getElementById('modalContent').innerHTML=html;
+  container.innerHTML=html;
+}
+
+function openArticle(id){
+  const a=articles.find(x=>x.id===id);if(!a)return;
+  const mc=document.getElementById('modalContent');
+  const imgs=(a.images||[]).map(u=>'<img src="'+u+'" onerror="this.style.display=\'none\'" alt="">').join('');
+  const vids=(a.videos||[]).map(v=>'<div class="video-embed"><iframe src="'+v.url+'" frameborder="0" allowfullscreen></iframe></div><p style="font-size:12px;color:var(--text3);margin-bottom:8px;text-align:center">'+v.title+'</p>').join('');
+  const approved=(a.comments||[]).filter(c=>c.approved);
+  const user='访客'+Math.random().toString(36).substring(2,5);
+  const now=new Date();
+  mc.innerHTML=
+    '<div class="modal-article-title">'+a.title+'</div>'+
+    '<div class="modal-article-meta">'+(a.source||'')+(a.source&&a.date?' · ':'')+(a.date||'')+'</div>'+
+    '<div class="modal-article-body">'+imgs+vids+(a.content||'').replace(/\n/g,'<br>')+'</div>'+
+    '<div class="comment-section">'+
+    '<h4>💬 留言互动 ('+approved.length+')</h4>'+
+    '<div class="comment-input"><input id="commentInput" placeholder="写下你的想法..."><button onclick="submitComment(\''+a.id+'\',\''+user+'\')">发送</button></div>'+
+    '<div id="commentList">'+
+    approved.map(c=>'<div class="comment-item"><div class="meta">'+c.user+' · '+c.time+'</div><div class="content">'+c.content+'</div></div>').join('')+
+    '</div></div>';
   document.getElementById('modalOverlay').classList.add('open');
 }
 
-function openVideoModal(title,icon,url){
-  clearInterval(autoTimer);
-  document.getElementById('modalTitle').textContent=title;
-  document.getElementById('modalEn').textContent='Video · '+icon;
-  let html='<div class="modal-video-box">';
-  if(url&&url!=='about:blank'){
-    html+='<iframe src="'+url+'" frameborder="0" allowfullscreen></iframe>';
+async function submitComment(aid,user){
+  const input=document.getElementById('commentInput');
+  const content=input.value.trim();
+  if(!content){alert('请输入留言内容');return}
+  input.value='';
+  const r=await api('/api/comment',{articleId:aid,user,content});
+  if(r&&r.ok){
+    const data=await api('/api/frontend-data');
+    if(data&&data.articles){
+      const updated=data.articles.find(x=>x.id===aid);
+      if(updated)Object.assign(articles.find(x=>x.id===aid)||{},updated);
+    }
+    openArticle(aid);
   }else{
-    html+='<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:64px;background:linear-gradient(135deg,#0a0a2e,#1a0a3e);border-radius:10px">'+icon+'</div>';
+    alert('留言发送成功（待审核）');
   }
-  html+='</div><p style="color:#5a7a90;font-size:13px;text-align:center">在后台管理中添加视频URL即可播放</p>';
-  document.getElementById('modalContent').innerHTML=html;
+}
+
+function openVideo(id){
+  const v=videos.find(x=>x.id===id);if(!v)return;
+  const mc=document.getElementById('modalContent');
+  mc.innerHTML=
+    '<div class="modal-article-title">'+v.title+'</div>'+
+    '<div class="modal-article-meta">'+(v.desc||'')+'</div>'+
+    '<div class="video-embed" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px;margin:12px 0"><iframe src="'+v.url+'" frameborder="0" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%"></iframe></div>';
   document.getElementById('modalOverlay').classList.add('open');
 }
 
 function closeModal(){
   document.getElementById('modalOverlay').classList.remove('open');
-  resetAuto();
 }
 
 document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
 
-// ===== BILINGUAL TTS =====
-const ttsBtn=document.getElementById('ttsBtn');
+// Init
+const now=new Date();
+document.getElementById('dateDisplay').textContent=now.getFullYear()+'年'+String(now.getMonth()+1).padStart(2,'0')+'月'+String(now.getDate()).padStart(2,'0')+'日 周'+week[now.getDay()];
 
-function getSlideBilingualText(index){
-  const slide=slides[index];
-  const t1=slide.querySelector('.section-title')||slide.querySelector('h1');
-  const t2=slide.querySelector('.section-en')||slide.querySelector('.cover-sub');
-  const cards=slide.querySelectorAll('.card-title');
-  const items=slide.querySelectorAll('.card-item');
-  const titles=slide.querySelectorAll('.news-item .title');
-  let cn='',en='';
-  if(t1)cn+=t1.textContent+'。';
-  if(t2)en+=t2.textContent+'. ';
-  cards.forEach(c=>{cn+=c.textContent+'。';const ce=c.nextElementSibling;if(ce)en+=ce.textContent+'. '});
-  items.forEach(i=>{cn+=i.textContent.replace(/^▹\s*/,'')+'。'});
-  titles.forEach(t=>{cn+=t.textContent+'。'});
-  return {cn,en};
-}
-
-function speakBilingual(index){
-  if(isSpeaking){synth.cancel();isSpeaking=false;ttsBtn.classList.remove('speaking');ttsBtn.querySelector('span').textContent='双语';resetAuto();return}
-  const {cn,en}=getSlideBilingualText(index);
-  if(!cn.trim()&&!en.trim())return;
-  const voices=synth.getVoices();
-  const zh=voices.find(v=>v.lang.startsWith('zh'));
-  const us=voices.find(v=>v.lang.startsWith('en-US'))||voices.find(v=>v.lang.startsWith('en'));
-  
-  function speakText(text,lang,voice,next){
-    const u=new SpeechSynthesisUtterance(text);
-    u.lang=lang;u.rate=0.85;u.pitch=1;
-    if(voice)u.voice=voice;
-    u.onend=next;
-    synth.speak(u);
-    return u;
-  }
-  
-  isSpeaking=true;
-  ttsBtn.classList.add('speaking');
-  ttsBtn.querySelector('span').textContent='停止';
-  clearInterval(autoTimer);
-  
-  const utterances=[];
-  if(cn.trim())utterances.push({text:cn,lang:'zh-CN',voice:zh});
-  if(en.trim())utterances.push({text:en,lang:'en-US',voice:us});
-  
-  function playNext(i){
-    if(i>=utterances.length||!isSpeaking){
-      isSpeaking=false;ttsBtn.classList.remove('speaking');ttsBtn.querySelector('span').textContent='双语';resetAuto();return
-    }
-    const u=utterances[i];
-    const ut=new SpeechSynthesisUtterance(u.text);
-    ut.lang=u.lang;ut.rate=0.85;ut.pitch=1;
-    if(u.voice)ut.voice=u.voice;
-    ut.onend=()=>playNext(i+1);
-    ut.onerror=()=>playNext(i+1);
-    speechSynthesis.speak(ut);
-  }
-  playNext(0);
-}
-
-ttsBtn.addEventListener('click',()=>speakBilingual(current));
-if(synth.onvoiceschanged!==undefined)synth.onvoiceschanged=()=>synth.getVoices();
-
-// ===== DATA FROM SERVER =====
-async function loadServerData(){
-  try{
-    const r=await fetch('/api/data');
-    const d=await r.json();
-    if(d.videos&&d.videos.length>0)renderVideosFromData(d.videos);
-  }catch(e){}
-}
-
-function renderVideosFromData(videos){
-  const c=document.getElementById('videoContainer');
-  c.innerHTML='';
-  videos.forEach(v=>{
-    const card=document.createElement('div');card.className='video-card';
-    card.onclick=()=>openVideoModal(v.title,v.thumb||'🎬',v.url||'about:blank');
-    card.innerHTML='<div class="thumb"><span class="play">▶</span>'+(v.thumb||'🎬')+'</div><div class="info"><h4>'+v.title+'</h4><p>'+(v.desc||'')+'</p></div>';
-    c.appendChild(card);
-  });
-}
-
-loadServerData();
-
-updateDisplay();
-resetAuto();
+(async function(){
+  await loadData();
+  renderNav();
+  renderHero();
+  renderContentSections();
+})();
 </script>
 </body>
 </html>
