@@ -37,6 +37,7 @@ tr:hover{background:rgba(255,255,255,0.02)}
 .login-logo{font-size:13px;color:#5a7a90;margin-bottom:30px}
 .admin-header{background:rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.06);padding:0 20px;display:flex;align-items:center;height:52px;gap:10px}
 .admin-header .brand{font-size:15px;font-weight:600;color:#00c8ff;white-space:nowrap}
+.admin-header .brand .dot-red{color:#ff2020;-webkit-text-fill-color:#ff2020;font-weight:900}
 .admin-header .nav{display:flex;gap:2px;flex:1;margin-left:12px;overflow-x:auto}
 .admin-header .nav a{padding:6px 12px;border-radius:5px;font-size:12px;color:#8aaec8;cursor:pointer;text-decoration:none;transition:all 0.3s;white-space:nowrap}
 .admin-header .nav a:hover{background:rgba(255,255,255,0.04);color:#e0e0e0}
@@ -105,7 +106,7 @@ tr:hover{background:rgba(255,255,255,0.02)}
 
 <div id="adminLayout" style="display:none">
   <div class="admin-header">
-    <div class="brand">Cii.中国 后台</div>
+    <div class="brand">Cii<span class="dot-red">.</span>中国 后台</div>
     <div class="nav">
       <a class="active" onclick="switchPage('dashboard',this)">概览</a>
       <a onclick="switchPage('articles',this)">文章管理</a>

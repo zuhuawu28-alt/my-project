@@ -21,6 +21,7 @@ header.scrolled{background:rgba(5,5,16,0.92)}
 .header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;height:60px;padding:0 24px;gap:12px}
 .logo{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:800;color:var(--primary);letter-spacing:3px;white-space:nowrap}
 .logo span.glow{background:var(--hero-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo .dot-red{color:#ff2020;-webkit-text-fill-color:#ff2020;font-weight:900}
 .logo .sub{font-size:10px;font-weight:300;color:var(--text3);letter-spacing:4px;-webkit-text-fill-color:var(--text3);margin-left:4px}
 /* ===== MEGA NAV ===== */
 .nav-wrap{flex:1;display:flex;align-items:center;justify-content:center}
@@ -130,7 +131,7 @@ footer strong{color:var(--text2)}
 
 <header id="siteHeader">
   <div class="header-inner">
-    <div class="logo"><span class="glow">Cii</span>.中国 <span class="sub">喜爱中国</span></div>
+    <div class="logo"><span class="glow">Cii</span><span class="dot-red">.</span>中国 <span class="sub">喜爱中国</span></div>
     <button class="mobile-toggle" onclick="toggleMobileNav()">☰</button>
     <div class="nav-wrap" id="mainNav">
       <ul class="nav-list" id="navList"></ul>
