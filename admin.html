@@ -187,6 +187,7 @@ tr:hover{background:rgba(255,255,255,0.02)}
           <div><label>来源</label><input id="artSource" placeholder="如 新华社"></div>
           <div><label>日期</label><input id="artDate" placeholder="2026-04-30"></div>
           <div><label>精选展示</label><select id="artFeatured"><option value="true">是</option><option value="false">否</option></select></div>
+          <div><label>显示图片</label><select id="artShowImages"><option value="true">显示</option><option value="false">隐藏</option></select></div>
         </div>
         <div class="collapse-section">
           <div class="collapse-header" onclick="toggleCollapse(this)"><span class="arrow">▶</span> 图片管理</div>
@@ -458,6 +459,7 @@ function renderArticleList(){
 function clearArticleForm(){
   ['artTitle','artBody','artEnBody','artSource','artDate'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('artFeatured').value='false';
+  document.getElementById('artShowImages').value='true';
   document.getElementById('artImagesPreview').innerHTML='';document.getElementById('artVideosPreview').innerHTML='';
   document.getElementById('cancelArtBtn').style.display='none';document.getElementById('saveArtBtn').textContent='发布文章';editingArticleId=null;
 }
@@ -469,6 +471,7 @@ function editArticle(id){
   document.getElementById('artEnBody').value=a.enContent||'';
   document.getElementById('artSource').value=a.source||'';document.getElementById('artDate').value=a.date||'';
   document.getElementById('artFeatured').value=a.featured?'true':'false';
+  document.getElementById('artShowImages').value=a.showImages!==false?'true':'false';
   document.getElementById('artSection').value=a.section;
   renderImagesPreview(a.images||[]);renderVideosPreview(a.videos||[]);
   document.getElementById('cancelArtBtn').style.display='';document.getElementById('saveArtBtn').textContent='更新文章';
@@ -484,7 +487,7 @@ function getArticleFormData(){
   if(!title){alert('请输入标题');return null}
   const images=[...document.querySelectorAll('#artImagesPreview .image-thumb-wrap img')].map(img=>img.src);
   const videos=[...document.querySelectorAll('#artVideosPreview .video-tag')].map(el=>JSON.parse(el.dataset.video));
-  return {section,title,content:document.getElementById('artBody').value.trim()||'暂无内容',enContent:document.getElementById('artEnBody').value.trim(),source:document.getElementById('artSource').value.trim(),date:document.getElementById('artDate').value.trim(),featured:document.getElementById('artFeatured').value==='true',images,videos};
+  return {section,title,content:document.getElementById('artBody').value.trim()||'暂无内容',enContent:document.getElementById('artEnBody').value.trim(),source:document.getElementById('artSource').value.trim(),date:document.getElementById('artDate').value.trim(),featured:document.getElementById('artFeatured').value==='true',showImages:document.getElementById('artShowImages').value==='true',images,videos};
 }
 
 async function saveArticle(){
