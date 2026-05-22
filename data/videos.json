@@ -1,0 +1,18 @@
+[
+  {
+    "id": "v1",
+    "title": "中国航天：星辰大海",
+    "desc": "中国航天事业发展历程",
+    "url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "thumb": "🚀",
+    "date": "2026-04"
+  },
+  {
+    "id": "v2",
+    "title": "未来科技趋势",
+    "desc": "人工智能与未来生活",
+    "url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "thumb": "🤖",
+    "date": "2026-03"
+  }
+]

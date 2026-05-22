@@ -211,18 +211,32 @@ tr:hover{background:rgba(255,255,255,0.02)}
 let data={admins:[],sections:{},news:[],videos:[],templates:[]};
 let currentUser=null;
 
+let apiOffline=false;
+
 async function api(url,body){
-  const opt={method:'GET',headers:{'Content-Type':'application/json'}};
-  if(body){opt.method='POST';opt.body=JSON.stringify(body)}
-  const r=await fetch(url,opt);
-  return r.json();
+  try{
+    const opt={method:'GET',headers:{'Content-Type':'application/json'}};
+    if(body){opt.method='POST';opt.body=JSON.stringify(body)}
+    const r=await fetch(url,opt);
+    if(!r.ok)return {ok:false,msg:'服务器错误 ('+r.status+')'};
+    return r.json();
+  }catch(e){
+    apiOffline=true;
+    return {ok:false,msg:'无法连接服务器，请确认已运行 python server.py'};
+  }
 }
 
 async function doLogin(){
+  document.getElementById('loginError').style.display='none';
   const user=document.getElementById('loginUser').value.trim();
   const pass=document.getElementById('loginPass').value.trim();
+  if(!user||!pass){document.getElementById('loginError').textContent='请输入用户名和密码';document.getElementById('loginError').style.display='block';return}
   const res=await api('/api/login',{user,pass});
-  if(!res.ok){document.getElementById('loginError').style.display='block';return}
+  if(!res.ok){
+    document.getElementById('loginError').textContent=res.msg||'用户名或密码错误';
+    document.getElementById('loginError').style.display='block';
+    return
+  }
   currentUser=res;
   await refreshData();
   document.getElementById('loginPage').style.display='none';
@@ -237,6 +251,7 @@ async function doLogout(){
   document.getElementById('adminLayout').style.display='none';
   document.getElementById('loginUser').value='';
   document.getElementById('loginPass').value='';
+  document.getElementById('loginError').style.display='none';
 }
 
 async function refreshData(){
@@ -442,25 +457,19 @@ function loadAll(){
 
 // Auto-login check
 (async function(){
-  const s=await api('/api/session');
-  const res=await api('/api/login',{user:s.user||'',pass:s.pass||''});
-  if(!res.ok){
-    // try check session
-    const chk=await api('/api/session/check');
-    if(chk.ok){
-      currentUser=chk;
-      await refreshData();
-      document.getElementById('loginPage').style.display='none';
-      document.getElementById('adminLayout').style.display='block';
-      showAdmin();
+  try{
+    const s=await api('/api/session');
+    if(s&&s.user){
+      const chk=await api('/api/session/check');
+      if(chk&&chk.ok){
+        currentUser=chk;
+        await refreshData();
+        document.getElementById('loginPage').style.display='none';
+        document.getElementById('adminLayout').style.display='block';
+        showAdmin();
+      }
     }
-  }else{
-    currentUser=res;
-    await refreshData();
-    document.getElementById('loginPage').style.display='none';
-    document.getElementById('adminLayout').style.display='block';
-    showAdmin();
-  }
+  }catch(e){}
 })();
 </script>
 </body>

@@ -4,6 +4,8 @@
 
 ## 启动
 
+**方法一（推荐）**：双击 `start.bat`
+**方法二**：在终端中运行
 ```powershell
 cd C:\Users\Holy\Desktop\my-project
 python server.py
