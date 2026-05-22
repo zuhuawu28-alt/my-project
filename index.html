@@ -130,9 +130,20 @@ footer strong{color:var(--text2)}
 /* ===== POSTER STYLE ===== */
 .modal-hero-img{width:100%;max-height:420px;object-fit:cover;border-radius:var(--radius);margin-bottom:14px;box-shadow:var(--glow);display:block}
 .modal-media{width:100%}
-.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin:12px 0}
-.gallery-item img{width:100%;height:140px;object-fit:cover;border-radius:6px;border:1px solid var(--border);transition:transform 0.3s;cursor:pointer}
-.gallery-item img:hover{transform:scale(1.03);box-shadow:var(--glow)}
+/* ===== SLIDESHOW ===== */
+.slide-show{position:relative;width:100%;border-radius:var(--radius);overflow:hidden;margin-bottom:14px;background:var(--bg2)}
+.slide-track{position:relative;width:100%;aspect-ratio:16/9}
+.slide-frame{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;transition:opacity 0.6s}
+.slide-frame.active{opacity:1}
+.slide-frame img{width:100%;height:100%;object-fit:cover}
+.slide-prev,.slide-next{position:absolute;top:50%;transform:translateY(-50%);z-index:2;background:rgba(0,0,0,0.5);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px;transition:all 0.3s;opacity:0}
+.slide-show:hover .slide-prev,.slide-show:hover .slide-next{opacity:1}
+.slide-prev{left:10px}
+.slide-next{right:10px}
+.slide-prev:hover,.slide-next:hover{background:rgba(0,200,255,0.6)}
+.slide-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:2;display:flex;gap:6px}
+.slide-dots span{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.35);cursor:pointer;transition:all 0.3s}
+.slide-dots span.active{background:#fff;width:20px;border-radius:4px}
 .article-body-cn,.article-body-en{display:none;font-size:14px;line-height:2;color:var(--text2)}
 .article-body-cn.active,.article-body-en.active{display:block}
 .article-body-en{font-family:'Georgia','Times New Roman',serif}
@@ -512,9 +523,17 @@ function switchArticleLang(lang){
 function openArticle(a){
   const mc=document.getElementById('modalContent');
   const showImages=a.showImages!==false;
-  const galleryImgs=showImages?(a.images||[]).slice(1).map(u=>'<div class="gallery-item"><img src="'+u+'" onerror="this.style.display=\'none\'" alt=""></div>').join('') :'';
-  const hasGallery=galleryImgs.length>0;
-  const heroImg=showImages&&a.images&&a.images[0]?'<img src="'+a.images[0]+'" class="modal-hero-img" onerror="this.style.display=\'none\'" alt="">':'';
+  const allImgs=showImages?(a.images||[]):[];
+  const slideHtml=allImgs.length>1?(
+    '<div class="slide-show" id="slideShow" data-idx="0">'+
+    '<div class="slide-track" id="slideTrack">'+allImgs.map((u,i)=>'<div class="slide-frame'+(i===0?' active':'')+'"><img src="'+u+'" onerror="this.style.display=\'none\'" alt=""></div>').join('')+'</div>'+
+    '<button class="slide-prev" onclick="slideMove(-1)">◀</button>'+
+    '<button class="slide-next" onclick="slideMove(1)">▶</button>'+
+    '<div class="slide-dots">'+allImgs.map((_,i)=>'<span class="'+(i===0?'active':'')+'" onclick="slideGo('+i+')"></span>').join('')+'</div>'+
+    '</div>'
+  ):(
+    allImgs.length===1?'<img src="'+allImgs[0]+'" class="modal-hero-img" onerror="this.style.display=\'none\'" alt="">':''
+  );
   const vids=(a.videos||[]).map(v=>{
     let vu=v.url;try{const u=new URL(vu);u.searchParams.delete('autoplay');vu=u.toString()}catch(e){vu=vu.replace(/([?&])autoplay=[01]&?/g,'$1').replace(/[?&]$/g,'')}
     return '<div class="ve"><iframe src="'+vu+'" frameborder="0" allowfullscreen></iframe></div>'
@@ -546,12 +565,11 @@ function openArticle(a){
       '<button class="tab-cn active" onclick="switchArticleLang(\'cn\')">📖 中文</button>'+
       (a.enContent?'<button class="tab-en" onclick="switchArticleLang(\'en\')">📖 English</button>':'')+
     '</div>'+
-    // Poster hero + videos
-    (heroImg||vids?'<div class="modal-media">'+heroImg+vids+'</div>':'')+
+    // Slideshow + videos
+    (slideHtml||vids?'<div class="modal-media">'+slideHtml+vids+'</div>':'')+
     // Body
     '<div class="article-body-cn active">'+cnBody+'</div>'+
     '<div class="article-body-en'+(a.enContent?'':' active')+'">'+enBody+'</div>'+
-    (hasGallery?'<div class="gallery-grid">'+galleryImgs+'</div>':'')+
     // Comments
     '<div class="comment-section"><h4>💬 留言互动 ('+approved.length+')</h4>'+
     (!currentMember?'<div style="font-size:12px;color:var(--text3);margin-bottom:8px">请先<a href="#" onclick="showMemberModal(\'login\');return false" style="color:var(--primary)">登录</a>后留言</div>':'')+
@@ -637,6 +655,40 @@ document.getElementById('dateDisplay').textContent=(()=>{
   renderFeatured();
   renderMainContent();
 })();
+
+// ===== SLIDESHOW =====
+let slideTimer=null;
+
+function slideMove(d){
+  const ss=document.getElementById('slideShow');
+  if(!ss)return;
+  const idx=parseInt(ss.dataset.idx||0);
+  const frames=ss.querySelectorAll('.slide-frame');
+  const dots=ss.querySelectorAll('.slide-dots span');
+  let n=idx+d;
+  if(n<0)n=frames.length-1;
+  if(n>=frames.length)n=0;
+  slideGo(n);
+}
+
+function slideGo(n){
+  const ss=document.getElementById('slideShow');
+  if(!ss)return;
+  ss.dataset.idx=n;
+  ss.querySelectorAll('.slide-frame').forEach((f,i)=>f.classList.toggle('active',i===n));
+  ss.querySelectorAll('.slide-dots span').forEach((d,i)=>d.classList.toggle('active',i===n));
+  clearInterval(slideTimer);
+  if(ss.querySelectorAll('.slide-frame').length>1)slideTimer=setInterval(()=>slideMove(1),5000);
+}
+
+// Override openArticle to start slideshow
+const _origOpenArticle=openArticle;
+openArticle=function(a){
+  _origOpenArticle(a);
+  clearInterval(slideTimer);
+  const ss=document.getElementById('slideShow');
+  if(ss&&ss.querySelectorAll('.slide-frame').length>1)slideTimer=setInterval(()=>slideMove(1),5000);
+};
 </script>
 </body>
 </html>
