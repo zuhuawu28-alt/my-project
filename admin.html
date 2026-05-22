@@ -83,6 +83,7 @@ tr:hover{background:rgba(255,255,255,0.02)}
       <a class="active" onclick="switchPage('dashboard',this)">概览</a>
       <a onclick="switchPage('content',this)">栏目内容</a>
       <a onclick="switchPage('news',this)">新闻管理</a>
+      <a onclick="switchPage('videos',this)">视频管理</a>
       <a onclick="switchPage('template',this)">模板管理</a>
       <a onclick="switchPage('admins',this)" id="navAdmins">管理员</a>
     </div>
@@ -106,6 +107,10 @@ tr:hover{background:rgba(255,255,255,0.02)}
           <div style="font-size:36px;font-weight:700;color:#7b61ff" id="statNews">0</div>
         </div>
       </div>
+        <div class="card" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:20px">
+          <div style="font-size:12px;color:#5a7a90">视频总数</div>
+          <div style="font-size:36px;font-weight:700;color:#00ff96" id="statVideos">0</div>
+        </div>
       <div style="margin-top:20px;font-size:13px;color:#5a7a90;line-height:2">
         <p>当前用户：<strong id="dashUser"></strong></p>
         <p>角色：<strong id="dashRole"></strong></p>
@@ -148,6 +153,23 @@ tr:hover{background:rgba(255,255,255,0.02)}
       <div class="data-table" id="newsList"></div>
     </div>
 
+    <!-- 视频管理 -->
+    <div class="page-section" id="page-videos">
+      <h3>视频管理</h3>
+      <div class="form-grid">
+        <div class="full"><label>视频标题</label><input id="videoTitle" placeholder="输入视频标题"></div>
+        <div class="full"><label>视频描述</label><textarea id="videoDesc" placeholder="输入视频描述"></textarea></div>
+        <div class="full"><label>视频嵌入URL（YouTube/B站iframe src）</label><input id="videoUrl" placeholder="https://www.youtube.com/embed/..."></div>
+        <div><label>图标（emoji）</label><input id="videoIcon" placeholder="🚀" value="🎬"></div>
+        <div><label>日期</label><input id="videoDate" placeholder="2026-04"></div>
+      </div>
+      <div class="form-actions">
+        <button onclick="addVideo()">添加视频</button>
+        <button class="secondary" onclick="document.getElementById('videoTitle').value='';document.getElementById('videoDesc').value='';document.getElementById('videoUrl').value='';document.getElementById('videoIcon').value='🎬';document.getElementById('videoDate').value=''">清空</button>
+      </div>
+      <div class="data-table" id="videoList"></div>
+    </div>
+
     <!-- 模板管理 -->
     <div class="page-section" id="page-template">
       <h3>模板管理</h3>
@@ -186,7 +208,7 @@ tr:hover{background:rgba(255,255,255,0.02)}
 </div>
 
 <script>
-let data={admins:[],sections:{},news:[],templates:[]};
+let data={admins:[],sections:{},news:[],videos:[],templates:[]};
 let currentUser=null;
 
 async function api(url,body){
@@ -229,6 +251,7 @@ function showAdmin(){
   document.getElementById('dashLastLogin').textContent='当前在线';
   document.getElementById('statSections').textContent=Object.keys(data.sections).length;
   document.getElementById('statNews').textContent=data.news.length;
+  document.getElementById('statVideos').textContent=(data.videos||[]).length;
   document.getElementById('navAdmins').style.display=currentUser.role==='superadmin'?'inline':'none';
   loadAll();
 }
@@ -324,6 +347,34 @@ async function deleteNews(idx){
   renderNews();document.getElementById('statNews').textContent=data.news.length;
 }
 
+// ======================== VIDEOS ========================
+function renderVideos(){
+  const container=document.getElementById('videoList');
+  if(!data.videos||data.videos.length===0){container.innerHTML='<div class="empty-msg">暂无视频</div>';return}
+  let html='<table><tr><th>标题</th><th>日期</th><th>操作</th></tr>';
+  data.videos.forEach((v,i)=>{html+='<tr><td>'+v.title+'</td><td>'+(v.date||'-')+'</td><td><button class="danger" style="padding:4px 12px;font-size:12px" onclick="deleteVideo('+i+')">删除</button></td></tr>'});
+  html+='</table>';
+  container.innerHTML=html;
+}
+
+async function addVideo(){
+  if(!hasAccess(['superadmin','content'])){alert('权限不足');return}
+  const title=document.getElementById('videoTitle').value.trim();
+  if(!title){alert('请输入视频标题');return}
+  if(!data.videos)data.videos=[];
+  data.videos.push({id:'v'+Date.now(),title:title,desc:document.getElementById('videoDesc').value.trim(),url:document.getElementById('videoUrl').value.trim(),thumb:document.getElementById('videoIcon').value.trim()||'🎬',date:document.getElementById('videoDate').value.trim()});
+  await api('/api/data',{videos:data.videos});
+  document.getElementById('videoTitle').value='';document.getElementById('videoDesc').value='';document.getElementById('videoUrl').value='';document.getElementById('videoIcon').value='🎬';document.getElementById('videoDate').value='';
+  renderVideos();document.getElementById('statVideos').textContent=data.videos.length;
+}
+
+async function deleteVideo(idx){
+  if(!confirm('确认删除？'))return;
+  data.videos.splice(idx,1);
+  await api('/api/data',{videos:data.videos});
+  renderVideos();document.getElementById('statVideos').textContent=data.videos.length;
+}
+
 function renderTemplates(){
   const grid=document.getElementById('templateGrid');
   grid.innerHTML='';
@@ -386,7 +437,7 @@ async function deleteAdmin(id){
 function loadAll(){
   const sel=document.getElementById('sectionSelect');
   sel.innerHTML='<option value="">-- 选择栏目 --</option>'+sectionKeys.map(k=>'<option value="'+k+'">'+sectionNames[k]+'</option>').join('')+'<option value="custom">+ 自定义栏目</option>';
-  loadSectionContent();renderNews();renderTemplates();renderAdmins();
+  loadSectionContent();renderNews();renderVideos();renderTemplates();renderAdmins();
 }
 
 // Auto-login check

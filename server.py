@@ -41,6 +41,11 @@ def ensure_defaults():
             {'id':'t2','name':'中国水墨','icon':'🎋','active':False},
             {'id':'t3','name':'极简白','icon':'✨','active':False}
         ])
+    if not os.path.exists(data_path('videos')):
+        write_json('videos', [
+            {'id':'v1','title':'中国航天：星辰大海','desc':'中国航天事业发展历程','url':'https://www.youtube.com/embed/dQw4w9WgXcQ','thumb':'🚀','date':'2026-04'},
+            {'id':'v2','title':'未来科技趋势','desc':'人工智能与未来生活','url':'https://www.youtube.com/embed/dQw4w9WgXcQ','thumb':'🤖','date':'2026-03'}
+        ])
     if not os.path.exists(data_path('session')):
         write_json('session', {})
 
@@ -85,7 +90,8 @@ def api_get_data():
         'admins': read_json('admins'),
         'sections': read_json('sections'),
         'news': read_json('news'),
-        'templates': read_json('templates')
+        'templates': read_json('templates'),
+        'videos': read_json('videos')
     })
 
 @app.route('/api/data', methods=['POST'])
@@ -101,6 +107,8 @@ def api_save_data():
         write_json('news', body['news'])
     if 'templates' in body and role in ('superadmin', 'template'):
         write_json('templates', body['templates'])
+    if 'videos' in body and role in ('superadmin', 'content'):
+        write_json('videos', body['videos'])
     if 'admins' in body and role == 'superadmin':
         write_json('admins', body['admins'])
     return jsonify({'ok': True})
