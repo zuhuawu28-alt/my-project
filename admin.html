@@ -186,69 +186,30 @@ tr:hover{background:rgba(255,255,255,0.02)}
 </div>
 
 <script>
-// ======================== DATA LAYER ========================
-const STORAGE_KEY='cii_admin_data';
-
-function getDefaultData(){
-  return {
-    admins:[
-      {id:'s1',user:'superadmin',pass:'admin123',role:'superadmin',name:'超级管理员'},
-      {id:'c1',user:'content',pass:'content123',role:'content',name:'内容管理员'},
-      {id:'t1',user:'template',pass:'template123',role:'template',name:'模板管理员'}
-    ],
-    sections:{},
-    news:[
-      {id:'n0',title:'习近平强调以更大力度加强基础研究 提升原始创新能力',body:'中共中央总书记、国家主席、中央军委主席习近平近日在考察时强调...',date:'2026-04-30',tag:'时政深一度'},
-      {id:'n1',title:'中巴建交75周年：巴基斯坦总统以最高礼仪致敬中国开国领袖',body:'在庆祝中巴建交75周年之际，巴基斯坦总统以最高礼仪向中国开国领袖致敬...',date:'2026-04-28',tag:'文明公约'}
-    ],
-    templates:[
-      {id:'t1',name:'暗色科技',icon:'🚀',active:true},
-      {id:'t2',name:'中国水墨',icon:'🎋',active:false},
-      {id:'t3',name:'极简白',icon:'✨',active:false}
-    ],
-    currentTemplate:'t1',
-    session:{}
-  };
-}
-
-function getData(){
-  try{
-    const raw=localStorage.getItem(STORAGE_KEY);
-    if(raw)return JSON.parse(raw);
-  }catch(e){}
-  return null;
-}
-
-function initData(){
-  let d=getData();
-  if(!d){
-    d=getDefaultData();
-    saveData(d);
-  }
-  return d;
-}
-
-function saveData(d){localStorage.setItem(STORAGE_KEY,JSON.stringify(d))}
-
-// ======================== AUTH ========================
-let data=initData();
+let data={admins:[],sections:{},news:[],templates:[]};
 let currentUser=null;
 
-function doLogin(){
+async function api(url,body){
+  const opt={method:'GET',headers:{'Content-Type':'application/json'}};
+  if(body){opt.method='POST';opt.body=JSON.stringify(body)}
+  const r=await fetch(url,opt);
+  return r.json();
+}
+
+async function doLogin(){
   const user=document.getElementById('loginUser').value.trim();
   const pass=document.getElementById('loginPass').value.trim();
-  const found=data.admins.find(a=>a.user===user&&a.pass===pass);
-  if(!found){
-    document.getElementById('loginError').style.display='block';
-    return;
-  }
-  currentUser=found;
-  data.session={user:found.user,role:found.role,time:new Date().toISOString()};
-  saveData(data);
+  const res=await api('/api/login',{user,pass});
+  if(!res.ok){document.getElementById('loginError').style.display='block';return}
+  currentUser=res;
+  await refreshData();
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('adminLayout').style.display='block';
   showAdmin();
 }
 
-function doLogout(){
+async function doLogout(){
+  await api('/api/logout',{});
   currentUser=null;
   document.getElementById('loginPage').style.display='flex';
   document.getElementById('adminLayout').style.display='none';
@@ -256,22 +217,19 @@ function doLogout(){
   document.getElementById('loginPass').value='';
 }
 
+async function refreshData(){
+  const res=await api('/api/data');
+  data=res;
+}
+
 function showAdmin(){
-  document.getElementById('loginPage').style.display='none';
-  document.getElementById('adminLayout').style.display='block';
   document.getElementById('currentUser').textContent=currentUser.user+' ('+getRoleLabel(currentUser.role)+')';
   document.getElementById('dashUser').textContent=currentUser.user;
   document.getElementById('dashRole').textContent=getRoleLabel(currentUser.role);
-  document.getElementById('dashLastLogin').textContent=data.session.time?new Date(data.session.time).toLocaleString():'首次登录';
+  document.getElementById('dashLastLogin').textContent='当前在线';
   document.getElementById('statSections').textContent=Object.keys(data.sections).length;
   document.getElementById('statNews').textContent=data.news.length;
-
-  // Show/hide admin management tab based on role
-  if(currentUser.role!=='superadmin'){
-    document.getElementById('navAdmins').style.display='none';
-  }else{
-    document.getElementById('navAdmins').style.display='inline';
-  }
+  document.getElementById('navAdmins').style.display=currentUser.role==='superadmin'?'inline':'none';
   loadAll();
 }
 
@@ -279,7 +237,6 @@ function getRoleLabel(r){
   return r==='superadmin'?'超级管理员':r==='content'?'内容管理员':r==='template'?'模板管理员':'未知';
 }
 
-// ======================== PAGE SWITCH ========================
 function switchPage(name,el){
   document.querySelectorAll('.page-section').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
@@ -294,13 +251,11 @@ function hasAccess(roles){
   return roles.includes(currentUser.role);
 }
 
-// ======================== SECTIONS / CONTENT ========================
 const sectionKeys=['shizheng','fenghuo','jingwei','sheji','keji','liebian','ziyuan','chongtu','kexue','wenming','qianxuesen','mantou','crown','water'];
 const sectionNames={shizheng:'时政深一度',fenghuo:'烽火铁甲',jingwei:'经纬脉搏',sheji:'社稷春秋',keji:'科技双刃',liebian:'裂变重溯',ziyuan:'资源配置',chongtu:'冲突重构',kexue:'科学探索',wenming:'文明博弈',qianxuesen:'伤痕铸就星辰的归国之路',mantou:'馒头与星辰',crown:'百元美钞上的王冠',water:'水的囚徒'};
 
 function loadSectionContent(){
-  const sel=document.getElementById('sectionSelect');
-  const key=sel.value;
+  const key=document.getElementById('sectionSelect').value;
   if(!key)return;
   const section=data.sections[key]||{articles:[]};
   renderArticles(key,section.articles);
@@ -309,35 +264,30 @@ function loadSectionContent(){
 function renderArticles(key,articles){
   const container=document.getElementById('articleList');
   if(!articles||articles.length===0){
-    container.innerHTML='<div class="empty-msg">暂无文章，请在下方添加</div>';
-    return;
+    container.innerHTML='<div class="empty-msg">暂无文章，请在下方添加</div>';return;
   }
   let html='<table><tr><th>标题</th><th>日期</th><th>操作</th></tr>';
-  articles.forEach((a,i)=>{
-    html+='<tr><td>'+a.h+'</td><td>'+(a.m||'-')+'</td><td><button class="danger" style="padding:4px 12px;font-size:12px" onclick="deleteArticle(\''+key+'\','+i+')">删除</button></td></tr>';
-  });
+  articles.forEach((a,i)=>{html+='<tr><td>'+a.h+'</td><td>'+(a.m||'-')+'</td><td><button class="danger" style="padding:4px 12px;font-size:12px" onclick="deleteArticle(\''+key+'\','+i+')">删除</button></td></tr>'});
   html+='</table>';
   container.innerHTML=html;
 }
 
-function addArticle(){
+async function addArticle(){
   if(!hasAccess(['superadmin','content'])){alert('权限不足');return}
   const key=document.getElementById('sectionSelect').value;
   if(!key){alert('请选择栏目');return}
   const h=document.getElementById('articleTitle').value.trim();
-  const p=document.getElementById('articleBody').value.trim();
   if(!h){alert('请输入标题');return}
   if(!data.sections[key])data.sections[key]={articles:[]};
-  data.sections[key].articles.push({h:h,p:p||'暂无内容',m:document.getElementById('articleDate').value||'','source':document.getElementById('articleSource').value||''});
-  saveData(data);
-  clearArticleForm();
-  loadSectionContent();
+  data.sections[key].articles.push({h:h,p:document.getElementById('articleBody').value.trim()||'暂无内容',m:document.getElementById('articleDate').value||'',source:document.getElementById('articleSource').value||''});
+  await api('/api/data',{sections:data.sections});
+  clearArticleForm();loadSectionContent();
 }
 
-function deleteArticle(key,idx){
+async function deleteArticle(key,idx){
   if(!confirm('确认删除？'))return;
   if(data.sections[key]&&data.sections[key].articles)data.sections[key].articles.splice(idx,1);
-  saveData(data);
+  await api('/api/data',{sections:data.sections});
   loadSectionContent();
 }
 
@@ -348,40 +298,32 @@ function clearArticleForm(){
   document.getElementById('articleSource').value='';
 }
 
-// ======================== NEWS ========================
 function renderNews(){
   const container=document.getElementById('newsList');
-  if(data.news.length===0){
-    container.innerHTML='<div class="empty-msg">暂无新闻</div>';return;
-  }
+  if(data.news.length===0){container.innerHTML='<div class="empty-msg">暂无新闻</div>';return}
   let html='<table><tr><th>标题</th><th>日期</th><th>标签</th><th>操作</th></tr>';
-  data.news.forEach((n,i)=>{
-    html+='<tr><td>'+n.title+'</td><td>'+(n.date||'-')+'</td><td>'+(n.tag||'-')+'</td><td><button class="danger" style="padding:4px 12px;font-size:12px" onclick="deleteNews('+i+')">删除</button></td></tr>';
-  });
+  data.news.forEach((n,i)=>{html+='<tr><td>'+n.title+'</td><td>'+(n.date||'-')+'</td><td>'+(n.tag||'-')+'</td><td><button class="danger" style="padding:4px 12px;font-size:12px" onclick="deleteNews('+i+')">删除</button></td></tr>'});
   html+='</table>';
   container.innerHTML=html;
 }
 
-function addNews(){
+async function addNews(){
   if(!hasAccess(['superadmin','content'])){alert('权限不足');return}
   const title=document.getElementById('newsTitle').value.trim();
   if(!title){alert('请输入新闻标题');return}
   data.news.push({id:'n'+Date.now(),title:title,body:document.getElementById('newsBody').value.trim(),date:document.getElementById('newsDate').value.trim(),tag:document.getElementById('newsTag').value.trim()});
-  saveData(data);
+  await api('/api/data',{news:data.news});
   document.getElementById('newsTitle').value='';document.getElementById('newsBody').value='';document.getElementById('newsDate').value='';document.getElementById('newsTag').value='';
-  renderNews();
-  document.getElementById('statNews').textContent=data.news.length;
+  renderNews();document.getElementById('statNews').textContent=data.news.length;
 }
 
-function deleteNews(idx){
+async function deleteNews(idx){
   if(!confirm('确认删除？'))return;
   data.news.splice(idx,1);
-  saveData(data);
-  renderNews();
-  document.getElementById('statNews').textContent=data.news.length;
+  await api('/api/data',{news:data.news});
+  renderNews();document.getElementById('statNews').textContent=data.news.length;
 }
 
-// ======================== TEMPLATES ========================
 function renderTemplates(){
   const grid=document.getElementById('templateGrid');
   grid.innerHTML='';
@@ -394,38 +336,32 @@ function renderTemplates(){
   });
 }
 
-function selectTemplate(id){
+async function selectTemplate(id){
   if(!hasAccess(['superadmin','template'])){alert('权限不足');return}
   data.templates.forEach(t=>t.active=(t.id===id));
-  data.currentTemplate=id;
-  saveData(data);
+  await api('/api/data',{templates:data.templates});
   renderTemplates();
   alert('模板已切换为：「'+data.templates.find(t=>t.id===id).name+'」');
 }
 
-function addTemplate(){
+async function addTemplate(){
   if(!hasAccess(['superadmin','template'])){alert('权限不足');return}
   const name=document.getElementById('newTemplateName').value.trim();
   if(!name){alert('请输入模板名称');return}
   data.templates.push({id:'tm'+Date.now(),name:name,icon:'📄',active:false});
-  saveData(data);
+  await api('/api/data',{templates:data.templates});
   document.getElementById('newTemplateName').value='';
   renderTemplates();
 }
 
-// ======================== ADMIN MANAGEMENT ========================
 function renderAdmins(){
   if(currentUser.role!=='superadmin'){document.getElementById('adminList').innerHTML='';return}
-  const container=document.getElementById('adminList');
   let html='<table><tr><th>用户名</th><th>角色</th><th>操作</th></tr>';
-  data.admins.forEach((a,i)=>{
-    html+='<tr><td>'+a.user+'</td><td><span class="badge badge-'+a.role+'">'+getRoleLabel(a.role)+'</span></td><td>'+(data.admins.length>1?'<button class="danger" style="padding:4px 12px;font-size:12px" onclick="deleteAdmin(\''+a.id+'\')">删除</button>':'')+'</td></tr>';
-  });
-  html+='</table>';
-  container.innerHTML=html;
+  data.admins.forEach((a,i)=>{html+='<tr><td>'+a.user+'</td><td><span class="badge badge-'+a.role+'">'+getRoleLabel(a.role)+'</span></td><td>'+(data.admins.length>1?'<button class="danger" style="padding:4px 12px;font-size:12px" onclick="deleteAdmin(\''+a.id+'\')">删除</button>':'')+'</td></tr>'});
+  document.getElementById('adminList').innerHTML=html+'</table>';
 }
 
-function addAdmin(){
+async function addAdmin(){
   if(currentUser.role!=='superadmin'){alert('权限不足');return}
   const user=document.getElementById('adminUser').value.trim();
   const pass=document.getElementById('adminPass').value.trim();
@@ -433,40 +369,48 @@ function addAdmin(){
   if(!user||!pass){alert('请输入用户名和密码');return}
   if(data.admins.find(a=>a.user===user)){alert('用户名已存在');return}
   data.admins.push({id:'a'+Date.now(),user:user,pass:pass,role:role,name:user});
-  saveData(data);
+  await api('/api/data',{admins:data.admins});
   document.getElementById('adminUser').value='';document.getElementById('adminPass').value='';
   renderAdmins();
 }
 
-function deleteAdmin(id){
+async function deleteAdmin(id){
   if(currentUser.role!=='superadmin')return;
   if(data.admins.length<=1){alert('至少保留一个管理员');return}
   if(!confirm('确认删除此管理员？'))return;
   data.admins=data.admins.filter(a=>a.id!==id);
-  saveData(data);
+  await api('/api/data',{admins:data.admins});
   renderAdmins();
 }
 
-// ======================== INIT ========================
 function loadAll(){
-  // Sections dropdown
   const sel=document.getElementById('sectionSelect');
   sel.innerHTML='<option value="">-- 选择栏目 --</option>'+sectionKeys.map(k=>'<option value="'+k+'">'+sectionNames[k]+'</option>').join('')+'<option value="custom">+ 自定义栏目</option>';
-  loadSectionContent();
-  renderNews();
-  renderTemplates();
-  renderAdmins();
+  loadSectionContent();renderNews();renderTemplates();renderAdmins();
 }
 
-// Check session
-if(data.session&&data.session.user){
-  const found=data.admins.find(a=>a.user===data.session.user);
-  if(found){
-    currentUser=found;
+// Auto-login check
+(async function(){
+  const s=await api('/api/session');
+  const res=await api('/api/login',{user:s.user||'',pass:s.pass||''});
+  if(!res.ok){
+    // try check session
+    const chk=await api('/api/session/check');
+    if(chk.ok){
+      currentUser=chk;
+      await refreshData();
+      document.getElementById('loginPage').style.display='none';
+      document.getElementById('adminLayout').style.display='block';
+      showAdmin();
+    }
+  }else{
+    currentUser=res;
+    await refreshData();
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('adminLayout').style.display='block';
     showAdmin();
-    return;
   }
-}
+})();
 </script>
 </body>
 </html>

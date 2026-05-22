@@ -1,0 +1,23 @@
+[
+  {
+    "id": "s1",
+    "user": "superadmin",
+    "pass": "admin123",
+    "role": "superadmin",
+    "name": "超级管理员"
+  },
+  {
+    "id": "c1",
+    "user": "content",
+    "pass": "content123",
+    "role": "content",
+    "name": "内容管理员"
+  },
+  {
+    "id": "t1",
+    "user": "template",
+    "pass": "template123",
+    "role": "template",
+    "name": "模板管理员"
+  }
+]
