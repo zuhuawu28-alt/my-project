@@ -7,31 +7,30 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:#0a0a12;color:#e0e0e0}
+a{color:#00c8ff;text-decoration:none}
 .slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 80px;opacity:0;transition:opacity 0.8s ease;pointer-events:none}
 .slide.active{opacity:1;pointer-events:auto}
 .bg-grid{position:absolute;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(0,200,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
 .slide>*{position:relative;z-index:1}
-h1{font-size:68px;font-weight:700;letter-spacing:8px;background:linear-gradient(135deg,#00c8ff,#7b61ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;margin-bottom:10px}
-.subtitle-en{font-size:18px;color:#7b9bb8;letter-spacing:4px;text-transform:uppercase;margin-bottom:30px}
-.subtitle-cn{font-size:22px;color:#a0c4e8;letter-spacing:2px;margin-bottom:8px}
+h1{font-size:68px;font-weight:700;letter-spacing:8px;background:linear-gradient(135deg,#00c8ff,#7b61ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
 .section-title{font-size:52px;font-weight:700;letter-spacing:6px;background:linear-gradient(135deg,#00c8ff,#7b61ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
 .section-en{font-size:16px;color:#7b9bb8;letter-spacing:3px;margin-bottom:30px}
 .grid{display:grid;gap:16px;width:100%;max-width:1100px}
 .grid-2{grid-template-columns:1fr 1fr}
 .grid-3{grid-template-columns:1fr 1fr 1fr}
 .grid-4{grid-template-columns:1fr 1fr 1fr 1fr}
-.card{background:rgba(255,255,255,0.04);border:1px solid rgba(0,200,255,0.12);border-radius:12px;padding:20px 24px;backdrop-filter:blur(4px);transition:border-color 0.3s}
-.card:hover{border-color:rgba(0,200,255,0.4)}
+.card{background:rgba(255,255,255,0.04);border:1px solid rgba(0,200,255,0.12);border-radius:12px;padding:20px 24px;backdrop-filter:blur(4px);transition:all 0.3s;cursor:pointer}
+.card:hover{border-color:#00c8ff;background:rgba(0,200,255,0.08);transform:translateY(-2px)}
 .card-title{font-size:20px;font-weight:600;color:#00c8ff;margin-bottom:8px}
 .card-title-en{font-size:12px;color:#5a7a90;margin-bottom:10px}
 .card-item{font-size:14px;color:#c0d0e0;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
 .card-item:last-child{border-bottom:none}
 .card-item::before{content:"▸ ";color:#7b61ff}
 .date-display{position:absolute;top:30px;right:40px;font-size:14px;color:#5a7a90;letter-spacing:1px;z-index:2}
-.logo-corner{position:absolute;top:30px;left:40px;font-size:14px;color:#5a7a90;letter-spacing:2px;z-index:2;display:flex;align-items:center;gap:8px}
-.logo-corner .dot{width:6px;height:6px;border-radius:50%;background:#00c8ff;display:inline-block;animation:pulse 2s infinite}
+.logo-corner{position:absolute;top:20px;left:30px;z-index:2;display:flex;align-items:center;gap:6px}
+.logo-corner img{height:32px}
+.logo-corner .dot{width:5px;height:5px;border-radius:50%;background:#00c8ff;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
-
 .controls{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:20px;z-index:100}
 .controls button{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#c0d0e0;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:18px;transition:all 0.3s;display:flex;align-items:center;justify-content:center}
 .controls button:hover{background:rgba(0,200,255,0.15);border-color:#00c8ff;color:#00c8ff}
@@ -43,18 +42,36 @@ h1{font-size:68px;font-weight:700;letter-spacing:8px;background:linear-gradient(
 .dots span.active{background:#00c8ff;width:24px;border-radius:4px}
 .auto-label{font-size:12px;color:#5a7a90}
 .page-num{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);font-size:14px;color:#5a7a90;letter-spacing:2px;z-index:100}
-
 .cover-sub{font-size:32px;color:#8aaec8;letter-spacing:4px;margin-bottom:40px}
 .cover-tagline{font-size:16px;color:#5a7a90;letter-spacing:6px;border-top:1px solid rgba(255,255,255,0.1);padding-top:20px;margin-top:20px}
-
 .news-list{width:100%;max-width:1100px}
-.news-item{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.news-item{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:background 0.2s}
+.news-item:hover{background:rgba(0,200,255,0.04)}
 .news-item .date{font-size:12px;color:#5a7a90;min-width:80px}
 .news-item .tag{font-size:11px;padding:2px 10px;border-radius:10px;background:rgba(0,200,255,0.1);color:#00c8ff;margin:0 12px;white-space:nowrap}
 .news-item .title{font-size:15px;color:#e0e8f0;flex:1}
-
 .footer-text{font-size:13px;color:#5a7a90;text-align:center;line-height:2;margin-top:20px}
 .footer-text strong{color:#8aaec8}
+.admin-link{position:fixed;bottom:40px;right:40px;z-index:100;font-size:11px;color:#3a5a70;letter-spacing:1px;opacity:0.4;transition:opacity 0.3s}
+.admin-link:hover{opacity:1;color:#5a8aaa}
+
+/* Modal / Sub-page */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+.modal-overlay.open{display:flex}
+.modal-box{background:#0d0d1a;border:1px solid rgba(0,200,255,0.2);border-radius:16px;width:90%;max-width:900px;max-height:85vh;overflow-y:auto;padding:40px;position:relative}
+.modal-box::-webkit-scrollbar{width:4px}
+.modal-box::-webkit-scrollbar-thumb{background:rgba(0,200,255,0.3);border-radius:2px}
+.modal-close{position:absolute;top:16px;right:20px;font-size:28px;cursor:pointer;color:#5a7a90;transition:color 0.3s;background:none;border:none}
+.modal-close:hover{color:#00c8ff}
+.modal-title{font-size:32px;font-weight:700;color:#00c8ff;margin-bottom:6px}
+.modal-en{font-size:14px;color:#5a7a90;margin-bottom:24px}
+.modal-article{padding:16px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.modal-article:last-child{border-bottom:none}
+.modal-article h3{font-size:18px;color:#e0e8f0;margin-bottom:6px}
+.modal-article p{font-size:14px;color:#8aaec8;line-height:1.8}
+.modal-article .meta{font-size:12px;color:#5a7a90;margin-top:4px}
+.modal-back{display:inline-block;margin-top:20px;color:#00c8ff;cursor:pointer;font-size:14px}
+.modal-back:hover{text-decoration:underline}
 
 @media(max-width:768px){
 .slide{padding:30px 20px}
@@ -63,17 +80,20 @@ h1{font-size:36px;letter-spacing:4px}
 .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
 .card{padding:14px 16px}
 .date-display{top:15px;right:15px;font-size:11px}
-.logo-corner{top:15px;left:15px;font-size:11px}
+.logo-corner{top:12px;left:14px}
+.logo-corner img{height:22px}
 .controls{flex-wrap:wrap;gap:10px;padding:0 10px;bottom:20px}
 .cover-sub{font-size:20px}
 .news-item{flex-wrap:wrap}
 .news-item .date{min-width:auto;margin-right:8px}
+.admin-link{bottom:90px;right:14px}
+.modal-box{padding:24px;width:95%}
 }
 </style>
 </head>
 <body>
 
-<div class="logo-corner"><span class="dot"></span> Cii.中国</div>
+<div class="logo-corner"><img src="logo.png" alt="Cii.China"><span class="dot"></span></div>
 <div class="date-display" id="dateDisplay"></div>
 
 <!-- SLIDE 1: COVER -->
@@ -90,23 +110,23 @@ h1{font-size:36px;letter-spacing:4px}
   <div class="section-title">时政深一度</div>
   <div class="section-en">Political Depth</div>
   <div class="grid grid-4" style="max-width:900px">
-    <div class="card">
+    <div class="card" onclick="openModal('时政深一度','In-Depth Politics','shizheng')">
       <div class="card-title">时政深一度</div>
       <div class="card-title-en">In-Depth Politics</div>
       <div class="card-item">习近平强调以更大力度加强基础研究 提升原始创新能力</div>
       <div class="card-item">习近平强调"义乌发展经验"：因地制宜探索高质量发展之路</div>
     </div>
-    <div class="card">
+    <div class="card" onclick="openModal('烽火铁甲','Iron Armor','fenghuo')">
       <div class="card-title">烽火铁甲</div>
       <div class="card-title-en">Iron Armor</div>
       <div class="card-item">中国海军宣传片引猜想：第四艘航母是否已"出鞘"？</div>
     </div>
-    <div class="card">
+    <div class="card" onclick="openModal('经纬脉搏','Economic Pulse','jingwei')">
       <div class="card-title">经纬脉搏</div>
       <div class="card-title-en">Economic Pulse</div>
       <div class="card-item">产业转移与内陆崛起：中国经济地理重塑</div>
     </div>
-    <div class="card">
+    <div class="card" onclick="openModal('社稷春秋','Society Chronicle','sheji')">
       <div class="card-title">社稷春秋</div>
       <div class="card-title-en">Society Chronicle</div>
       <div class="card-item">宝山区委第十三轮巡察进驻5家单位</div>
@@ -120,7 +140,7 @@ h1{font-size:36px;letter-spacing:4px}
   <div class="section-title">后稀缺时代</div>
   <div class="section-en">Post-Scarcity Era</div>
   <div class="grid grid-2" style="max-width:1000px">
-    <div class="card">
+    <div class="card" onclick="openModal('科技双刃','Technology Double-Edged','keji')">
       <div class="card-title">科技双刃</div>
       <div class="card-title-en">Technology Double-Edged</div>
       <div class="card-item">智能革命 — AI重塑生产力格局</div>
@@ -130,7 +150,7 @@ h1{font-size:36px;letter-spacing:4px}
       <div class="card-item">地缘裂变 — 科技地缘博弈</div>
       <div class="card-item">地球工程 — 中国可重复使用航天器第六次发射成功</div>
     </div>
-    <div class="card">
+    <div class="card" onclick="openModal('裂变重溯','Fission Retrospection','liebian')">
       <div class="card-title">裂变重溯</div>
       <div class="card-title-en">Fission Retrospection</div>
       <div class="card-item">供应链战 — 全球供应链重构与中国产业转移</div>
@@ -149,7 +169,7 @@ h1{font-size:36px;letter-spacing:4px}
   <div class="section-title">蓝星体系</div>
   <div class="section-en">Blue Earth System</div>
   <div class="grid grid-2" style="max-width:1000px">
-    <div class="card">
+    <div class="card" onclick="openModal('资源配置','Resource Allocation','ziyuan')">
       <div class="card-title">资源配置</div>
       <div class="card-title-en">Resource Allocation</div>
       <div class="card-item">基因溯源 — 生命起源与基因资源</div>
@@ -159,7 +179,7 @@ h1{font-size:36px;letter-spacing:4px}
       <div class="card-item">代理人战 — 地缘代理人博弈</div>
       <div class="card-item">文明公约 — 中巴建交75周年：巴基斯坦总统最高礼仪致敬中国开国领袖</div>
     </div>
-    <div class="card">
+    <div class="card" onclick="openModal('冲突重构','Conflict Restructuring','chongtu')">
       <div class="card-title">冲突重构</div>
       <div class="card-title-en">Conflict Restructuring</div>
       <div class="card-item">异能觉醒 — 新质生产力崛起</div>
@@ -178,7 +198,7 @@ h1{font-size:36px;letter-spacing:4px}
   <div class="section-title">地外文明</div>
   <div class="section-en">Extraterrestrial Civilization</div>
   <div class="grid grid-2" style="max-width:1000px">
-    <div class="card">
+    <div class="card" onclick="openModal('科学探索','Scientific Exploration','kexue')">
       <div class="card-title">科学探索</div>
       <div class="card-title-en">Scientific Exploration</div>
       <div class="card-item">深空探秘 — 中国深空探测计划</div>
@@ -188,7 +208,7 @@ h1{font-size:36px;letter-spacing:4px}
       <div class="card-item">极端适应 — 极端环境生命适应机制</div>
       <div class="card-item">生物标踪 — 宇宙生命信号追踪</div>
     </div>
-    <div class="card">
+    <div class="card" onclick="openModal('文明博弈','Civilization Game','wenming')">
       <div class="card-title">文明博弈</div>
       <div class="card-title-en">Civilization Game</div>
       <div class="card-item">接触准则 — 地外文明接触伦理框架</div>
@@ -207,14 +227,14 @@ h1{font-size:36px;letter-spacing:4px}
   <div class="section-title">新闻头条</div>
   <div class="section-en">Headline News</div>
   <div class="news-list" style="max-width:900px">
-    <div class="news-item"><span class="date">2026-04-30</span><span class="tag">时政深一度</span><span class="title">习近平强调以更大力度加强基础研究 提升原始创新能力</span></div>
-    <div class="news-item"><span class="date">2026-04-28</span><span class="tag">文明公约</span><span class="title">中巴建交75周年：巴基斯坦总统以最高礼仪致敬中国开国领袖</span></div>
-    <div class="news-item"><span class="date">2026-04-22</span><span class="tag">资源角力</span><span class="title">元首外交春潮涌：多国领导人密集访华释放合作强信号</span></div>
-    <div class="news-item"><span class="date">2026-04-19</span><span class="tag">冲突重构</span><span class="title">日本防卫报告重构对华认知 以中俄朝系统替代单一国家视角</span></div>
-    <div class="news-item"><span class="date">2026-04-02</span><span class="tag">裂变重溯</span><span class="title">卫报称中国产业转移是第三线回归 官方回应：差异巨大</span></div>
-    <div class="news-item"><span class="date">2026-03-27</span><span class="tag">自媒体悖论</span><span class="title">美英多份权威文件未见涉华"影响力操作"表述 2月报告实为自媒体杜撰</span></div>
-    <div class="news-item"><span class="date">2026-03-19</span><span class="tag">信仰重构</span><span class="title">中国将成为全球精神复兴摇篮</span></div>
-    <div class="news-item"><span class="date">2026-02-21</span><span class="tag">观测矩阵</span><span class="title">中国科学家发布天文AI模型"星衍"：探测深度跃升1星等</span></div>
+    <div class="news-item" onclick="openNewsDetail(0)"><span class="date">2026-04-30</span><span class="tag">时政深一度</span><span class="title">习近平强调以更大力度加强基础研究 提升原始创新能力</span></div>
+    <div class="news-item" onclick="openNewsDetail(1)"><span class="date">2026-04-28</span><span class="tag">文明公约</span><span class="title">中巴建交75周年：巴基斯坦总统以最高礼仪致敬中国开国领袖</span></div>
+    <div class="news-item" onclick="openNewsDetail(2)"><span class="date">2026-04-22</span><span class="tag">资源角力</span><span class="title">元首外交春潮涌：多国领导人密集访华释放合作强信号</span></div>
+    <div class="news-item" onclick="openNewsDetail(3)"><span class="date">2026-04-19</span><span class="tag">冲突重构</span><span class="title">日本防卫报告重构对华认知 以中俄朝系统替代单一国家视角</span></div>
+    <div class="news-item" onclick="openNewsDetail(4)"><span class="date">2026-04-02</span><span class="tag">裂变重溯</span><span class="title">卫报称中国产业转移是第三线回归 官方回应：差异巨大</span></div>
+    <div class="news-item" onclick="openNewsDetail(5)"><span class="date">2026-03-27</span><span class="tag">自媒体悖论</span><span class="title">美英多份权威文件未见涉华"影响力操作"表述</span></div>
+    <div class="news-item" onclick="openNewsDetail(6)"><span class="date">2026-03-19</span><span class="tag">信仰重构</span><span class="title">中国将成为全球精神复兴摇篮</span></div>
+    <div class="news-item" onclick="openNewsDetail(7)"><span class="date">2026-02-21</span><span class="tag">观测矩阵</span><span class="title">中国科学家发布天文AI模型"星衍"：探测深度跃升1星等</span></div>
   </div>
 </div>
 
@@ -224,22 +244,22 @@ h1{font-size:36px;letter-spacing:4px}
   <div class="section-title">破茧者说</div>
   <div class="section-en">Breaking the Cocoon Speaks</div>
   <div class="grid grid-2" style="max-width:800px">
-    <div class="card">
+    <div class="card" onclick="openModal('伤痕铸就星辰的归国之路','The Star\'s Return — Qian Xuesen','qianxuesen')">
       <div class="card-title">伤痕铸就星辰的归国之路</div>
       <div class="card-title-en">The Star's Return — Qian Xuesen</div>
       <div class="card-item">钱学森：中国航天之父的归国之路，伤痕铸就星辰</div>
     </div>
-    <div class="card">
+    <div class="card" onclick="openModal('馒头与星辰','Bread and Stars','mantou')">
       <div class="card-title">馒头与星辰</div>
       <div class="card-title-en">Bread and Stars</div>
       <div class="card-item">平凡与伟大的辩证：如何在日常中追寻星空</div>
     </div>
-    <div class="card">
+    <div class="card" onclick="openModal('百元美钞上的王冠','The Crown on the Hundred-Dollar Bill','crown')">
       <div class="card-title">百元美钞上的王冠</div>
       <div class="card-title-en">The Crown on the Hundred-Dollar Bill</div>
       <div class="card-item">符号与权力：货币设计背后的文明叙事</div>
     </div>
-    <div class="card">
+    <div class="card" onclick="openModal('水的囚徒','Prisoner of Water — Viktor Schauberger','water')">
       <div class="card-title">水的囚徒</div>
       <div class="card-title-en">Prisoner of Water — Viktor Schauberger</div>
       <div class="card-item">维克多·舍费尔：水的奥秘与自然能源的探索者</div>
@@ -264,6 +284,17 @@ h1{font-size:36px;letter-spacing:4px}
   </div>
 </div>
 
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-en" id="modalEn"></div>
+    <div id="modalContent"></div>
+    <div class="modal-back" onclick="closeModal()">← 返回</div>
+  </div>
+</div>
+
 <!-- CONTROLS -->
 <div class="page-num" id="pageNum">1 / 8</div>
 <div class="controls">
@@ -274,120 +305,135 @@ h1{font-size:36px;letter-spacing:4px}
   <span class="auto-label" id="autoLabel">自动 8s</span>
 </div>
 
-<script>
-const slides = document.querySelectorAll('.slide');
-const total = slides.length;
-let current = 0;
-let autoTimer = null;
-let isSpeaking = false;
-let speechSynth = window.speechSynthesis;
-let currentUtterance = null;
+<a class="admin-link" href="admin.html" target="_blank">⚙ 后台管理</a>
 
-const dotsContainer = document.getElementById('dots');
+<script>
+const slides=document.querySelectorAll('.slide');
+const total=slides.length;
+let current=0,autoTimer=null,isSpeaking=false;
+const speechSynth=window.speechSynthesis;
+
+const dotsContainer=document.getElementById('dots');
 for(let i=0;i<total;i++){
-  const dot = document.createElement('span');
-  if(i===0) dot.classList.add('active');
-  dot.addEventListener('click',()=>goTo(i));
-  dotsContainer.appendChild(dot);
+  const d=document.createElement('span');
+  if(i===0)d.classList.add('active');
+  d.addEventListener('click',()=>goTo(i));
+  dotsContainer.appendChild(d);
 }
 
 function updateDisplay(){
   slides.forEach((s,i)=>s.classList.toggle('active',i===current));
   document.querySelectorAll('.dots span').forEach((d,i)=>d.classList.toggle('active',i===current));
-  document.getElementById('pageNum').textContent = (current+1)+' / '+total;
+  document.getElementById('pageNum').textContent=(current+1)+' / '+total;
 }
 
 function goTo(n){
-  if(n<0) n=total-1;
-  if(n>=total) n=0;
-  current=n;
-  updateDisplay();
-  resetAuto();
+  if(n<0)n=total-1;if(n>=total)n=0;current=n;updateDisplay();resetAuto();
 }
 
 document.getElementById('prevBtn').addEventListener('click',()=>goTo(current-1));
 document.getElementById('nextBtn').addEventListener('click',()=>goTo(current+1));
-document.addEventListener('keydown',e=>{
-  if(e.key==='ArrowLeft') goTo(current-1);
-  if(e.key==='ArrowRight') goTo(current+1);
-});
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')goTo(current-1);if(e.key==='ArrowRight')goTo(current+1)});
 
-function resetAuto(){
+function resetAuto(){clearInterval(autoTimer);autoTimer=setInterval(()=>{if(!isSpeaking)goTo(current+1)},8000)}
+
+const now=new Date();
+document.getElementById('dateDisplay').textContent=now.getFullYear()+'年'+String(now.getMonth()+1).padStart(2,'0')+'月'+String(now.getDate()).padStart(2,'0')+'日 '+'星期日一二三四五六'[now.getDay()]+'日 '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+
+// Modal / Detail data
+const detailData={
+shizheng:{title:'时政深一度',articles:[{h:'习近平强调以更大力度加强基础研究 提升原始创新能力',p:'中共中央总书记、国家主席、中央军委主席习近平近日在考察时强调，要瞄准世界科技前沿，以更大力度加强基础研究，提升原始创新能力，为实现高水平科技自立自强提供有力支撑。',m:'2026-04-30 08:00 | 新华社'},{h:'习近平强调"义乌发展经验"：因地制宜探索高质量发展之路',p:'习近平在浙江考察时指出，义乌的发展经验是中国特色社会主义在县域层面的生动实践，要因地制宜探索高质量发展之路，推动县域经济不断迈上新台阶。',m:'2026-04-25 14:30 | 新华社'}]},
+fenghuo:{title:'烽火铁甲',articles:[{h:'中国海军宣传片引猜想：第四艘航母是否已"出鞘"？',p:'中国海军最新发布的宣传片中出现的新航母画面引发广泛关注。分析人士指出，这可能是中国第四艘航母的首次公开亮相，标志着我国海军建设进入新阶段。',m:'2026-04-28 09:15 | 央视军事'}]},
+jingwei:{title:'经纬脉搏',articles:[{h:'产业转移与内陆崛起：中国经济地理重塑',p:'随着全球供应链重构和国内产业政策调整，中国内陆地区正迎来新一轮发展机遇。产业向内陆转移不仅优化了全国生产力布局，也为区域协调发展注入新动力。',m:'2026-04-20 11:00 | 经济日报'}]},
+sheji:{title:'社稷春秋',articles:[{h:'宝山区委第十三轮巡察进驻5家单位',p:'根据区委统一部署，十三届区委第十三轮巡察工作全面启动，5个巡察组分别进驻相关单位开展常规巡察，重点检查贯彻落实党的路线方针政策和党中央决策部署情况。',m:'2026-04-18 16:30 | 宝山发布'}]},
+keji:{title:'科技双刃',articles:[{h:'智能革命 — AI重塑生产力格局',p:'人工智能正在深刻改变全球生产力格局。从智能制造到智慧城市，从医疗诊断到金融风控，AI的应用边界不断拓展，同时也带来了就业结构变化和伦理挑战。',m:'2026-04-15'},{h:'基因边界 — 基因编辑伦理与法规探索',p:'随着CRISPR技术的成熟，基因编辑在疾病治疗领域展现出巨大潜力。但"基因编辑婴儿"事件引发的伦理争议，促使各国加快相关立法进程。',m:'2026-04-10'},{h:'地球工程 — 中国可重复使用航天器第六次发射成功',p:'中国可重复使用航天器于近日成功完成第六次发射任务，构建天地协同太空运输新生态，为我国航天事业可持续发展奠定了坚实基础。',m:'2026-02-08 00:57:58'}]},
+liebian:{title:'裂变重溯',articles:[{h:'供应链战 — 全球供应链重构与中国产业转移',p:'卫报称中国产业转移是第三线回归，官方回应：差异巨大，勿过度解读。中国产业向中西部转移是基于经济规律和市场需求的自发调整。',m:'2026-04-02 23:57:27'},{h:'自媒体悖论 — 美英多份权威文件未见涉华"影响力操作"表述',p:'2026年1月美国国务院发布的2026-2030财年机构战略计划提及中国23次，但未涉及"影响力操作"框架。2月相关报告实为自媒体杜撰。',m:'2026-03-27 09:08:11'}]},
+ziyuan:{title:'资源配置',articles:[{h:'资源角力 — 元首外交春潮涌：多国领导人密集访华',p:'2026年春季，多国领导人密集访华，元首外交进入高潮。各方在经贸合作、气候变化、地区安全等议题上寻求共识，释放合作强信号。',m:'2026-04-22'},{h:'文明公约 — 中巴建交75周年特别报道',p:'巴基斯坦总统以最高礼仪致敬中国开国领袖，两国领导人互致贺电，强调将推动中巴全天候战略合作伙伴关系不断向前发展。',m:'2026-04-28'}]},
+chongtu:{title:'冲突重构',articles:[{h:'升维实验 — 日本防卫报告重构对华认知',p:'日本最新防卫报告以中俄朝系统替代以往单一国家视角，反映了日本安全战略的重大转型。这一变化将对东亚安全格局产生深远影响。',m:'2026-04-19'}]},
+kexue:{title:'科学探索',articles:[{h:'深空探秘 — 中国深空探测计划',p:'中国正在实施一系列深空探测任务，包括月球采样返回、火星探测、小行星探测等，展现了人类探索宇宙的雄心与能力。',m:'2026-03'},{h:'行星考古 — 中国天问三号完成火星采样关键突破',p:'中国天问三号完成火星采样关键突破，全球首个地外样本返回进入倒计时。这一成就标志着中国深空探测技术迈入世界前列。',m:'2026-02-01 15:13:23'},{h:'观测矩阵 — 中国科学家发布天文AI模型"星衍"',p:'中国科学家发布天文AI模型"星衍"，探测深度跃升1星等，发现160余个宇宙早期星系，为理解宇宙演化提供了重要观测数据。',m:'2026-02-21'}]},
+wenming:{title:'文明博弈',articles:[{h:'接触准则 — 地外文明接触伦理框架',p:'随着人类太空探索能力的提升，地外文明接触的伦理问题日益受到关注。国际社会正在探讨建立统一的地外文明接触准则框架。',m:'2026-03'},{h:'信仰重构 — 中国将成为全球精神复兴摇篮',p:'有学者指出，在物质主义盛行的当代，东方文明蕴含的哲学智慧和精神资源将为全球精神复兴提供重要启示。',m:'2026-03-19'}]},
+qianxuesen:{title:'伤痕铸就星辰的归国之路',articles:[{h:'钱学森：中国航天之父',p:'1955年，钱学森历经五年艰难谈判和软禁，终于回到祖国。他领导创建了中国第一个火箭、导弹研究机构，被誉为"中国航天之父"和"火箭之王"。他的归国之路是一部伤痕铸就星辰的传奇。',m:'破茧者说'}]},
+mantou:{title:'馒头与星辰',articles:[{h:'平凡与伟大的辩证',p:'在日复一日的平凡生活中，如何保持对星空的仰望？馒头与星辰的辩证告诉我们，真正的伟大不在于脱离日常，而在于在日常中坚守对美好的追求。',m:'破茧者说'}]},
+crown:{title:'百元美钞上的王冠',articles:[{h:'符号与权力',p:'货币不仅是交换媒介，更是文明叙事的载体。百元美钞上的王冠、金字塔、鹰等符号背后，隐藏着深刻的权力叙事和文明密码。',m:'破茧者说'}]},
+water:{title:'水的囚徒',articles:[{h:'维克多·舍费尔：水的奥秘',p:'奥地利自然学家维克多·舍费尔（Viktor Schauberger）一生致力于研究水的自然运动规律。他揭示了水在自然温度下螺旋运动产生的能量，对现代能源和生态理念产生了深远影响。',m:'破茧者说'}]}
+};
+
+function openModal(title,en,key){
   clearInterval(autoTimer);
-  autoTimer=setInterval(()=>{
-    if(!isSpeaking) goTo(current+1);
-  },8000);
+  const data=detailData[key];
+  if(!data)return;
+  document.getElementById('modalTitle').textContent=title;
+  document.getElementById('modalEn').textContent=en;
+  let html='';
+  data.articles.forEach(a=>{
+    html+='<div class="modal-article"><h3>'+a.h+'</h3><p>'+a.p+'</p>';
+    if(a.m)html+='<div class="meta">'+a.m+'</div>';
+    html+='</div>';
+  });
+  document.getElementById('modalContent').innerHTML=html;
+  document.getElementById('modalOverlay').classList.add('open');
 }
 
-// Date display
-const now=new Date();
-const y=now.getFullYear();
-const m=String(now.getMonth()+1).padStart(2,'0');
-const d=String(now.getDate()).padStart(2,'0');
-const week=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'][now.getDay()];
-const h=String(now.getHours()).padStart(2,'0');
-const mi=String(now.getMinutes()).padStart(2,'0');
-document.getElementById('dateDisplay').textContent=y+'年'+m+'月'+d+'日 '+week+' '+h+':'+mi;
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  resetAuto();
+}
+
+function openNewsDetail(idx){
+  const items=[
+    {t:'习近平强调以更大力度加强基础研究 提升原始创新能力',c:'中共中央总书记、国家主席、中央军委主席习近平近日在考察时强调，要瞄准世界科技前沿，以更大力度加强基础研究，提升原始创新能力，为实现高水平科技自立自强提供有力支撑。这是我国科技事业发展的根本遵循。',tg:'时政深一度',d:'2026-04-30'},
+    {t:'中巴建交75周年：巴基斯坦总统以最高礼仪致敬中国开国领袖',c:'在庆祝中巴建交75周年之际，巴基斯坦总统以最高礼仪向中国开国领袖致敬，体现了两个友好邻邦之间的深厚情谊。两国领导人一致同意推动中巴全天候战略合作伙伴关系不断向前发展。',tg:'文明公约',d:'2026-04-28'},
+    {t:'元首外交春潮涌：多国领导人密集访华释放合作强信号',c:'2026年春季，多国领导人密集访华，元首外交进入高潮。各方在经贸合作、气候变化、地区安全等重大议题上寻求共识，释放出全球合作共赢的强烈信号。',tg:'资源角力',d:'2026-04-22'},
+    {t:'日本防卫报告重构对华认知',c:'日本最新防卫报告以中俄朝系统替代以往单一国家视角，反映了日本安全战略的重大转型。分析人士认为，这一变化将对东亚安全格局产生深远影响。',tg:'冲突重构',d:'2026-04-19'},
+    {t:'卫报称中国产业转移是第三线回归 官方回应：差异巨大',c:'英国卫报将中国当前的产业向内陆转移类比为"第三线回归"，中国官方回应称，这是基于经济规律和市场需求的正常产业升级，与历史概念差异巨大，勿过度解读。',tg:'裂变重溯',d:'2026-04-02'},
+    {t:'美英多份权威文件未见涉华"影响力操作"表述',c:'2026年1月美国国务院发布的2026-2030财年机构战略计划提及中国23次，但未涉及"影响力操作"框架。2026年3月美国国家情报总监提交的年度威胁评估报告将中国视为头号战略竞争对手。2月所谓"影响力操作"报告实为自媒体杜撰。',tg:'自媒体悖论',d:'2026-03-27'},
+    {t:'中国将成为全球精神复兴摇篮',c:'在物质主义和技术理性盛行的当代，东方文明蕴含的哲学智慧和精神资源正日益引起全球关注。中国传统文化中的"天人合一""和而不同""天下为公"等理念，为全球精神复兴提供了独特而宝贵的资源。',tg:'信仰重构',d:'2026-03-19'},
+    {t:'中国科学家发布天文AI模型"星衍"',c:'中国科学家发布天文AI模型"星衍"：探测深度跃升1星等，发现160余个宇宙早期星系。这一成果标志着人工智能在天文领域的应用取得重大突破。',tg:'观测矩阵',d:'2026-02-21'}
+  ];
+  const item=items[idx];
+  if(!item)return;
+  clearInterval(autoTimer);
+  document.getElementById('modalTitle').textContent=item.t;
+  document.getElementById('modalEn').textContent=item.tg+' | '+item.d;
+  document.getElementById('modalContent').innerHTML='<div class="modal-article"><p>'+item.c+'</p><div class="meta">'+item.d+' | '+item.tg+'</div></div>';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
 
 // TTS
 const ttsBtn=document.getElementById('ttsBtn');
 
 function getSlideText(index){
   const slide=slides[index];
-  const titleCn=slide.querySelector('.section-title')||slide.querySelector('h1');
-  const titleEn=slide.querySelector('.section-en')||slide.querySelector('.cover-sub');
+  const t1=slide.querySelector('.section-title')||slide.querySelector('h1');
+  const t2=slide.querySelector('.section-en')||slide.querySelector('.cover-sub');
   let text='';
-  if(titleCn) text+=titleCn.textContent+'。';
-  if(titleEn) text+=titleEn.textContent+'. ';
-  const titles=slide.querySelectorAll('.card-title');
-  titles.forEach(t=>{text+=t.textContent+'。'});
-  const items=slide.querySelectorAll('.card-item,.news-item .title');
-  items.forEach(t=>{text+=t.textContent+'。'});
+  if(t1)text+=t1.textContent+'。';
+  if(t2)text+=t2.textContent+'. ';
+  slide.querySelectorAll('.card-title,.card-item').forEach(t=>{text+=t.textContent+'。'});
+  slide.querySelectorAll('.news-item .title').forEach(t=>{text+=t.textContent+'。'});
   return text;
 }
 
-function speakSlide(index){
-  if(isSpeaking){
-    speechSynth.cancel();
-    isSpeaking=false;
-    ttsBtn.classList.remove('speaking');
-    ttsBtn.querySelector('span').textContent='语音';
-    resetAuto();
-    return;
-  }
-  const text=getSlideText(index);
-  if(!text.trim()) return;
+function speakSlide(idx){
+  if(isSpeaking){speechSynth.cancel();isSpeaking=false;ttsBtn.classList.remove('speaking');ttsBtn.querySelector('span').textContent='语音';resetAuto();return}
+  const text=getSlideText(idx);
+  if(!text.trim())return;
   const voices=speechSynth.getVoices();
-  const zhVoice=voices.find(v=>v.lang.startsWith('zh'));
-  const utterance=new SpeechSynthesisUtterance(text);
-  utterance.lang='zh-CN';
-  utterance.rate=0.9;
-  utterance.pitch=1;
-  if(zhVoice) utterance.voice=zhVoice;
-  isSpeaking=true;
-  currentUtterance=utterance;
-  ttsBtn.classList.add('speaking');
-  ttsBtn.querySelector('span').textContent='停止';
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='zh-CN';u.rate=0.9;u.pitch=1;
+  const v=voices.find(v=>v.lang.startsWith('zh'));
+  if(v)u.voice=v;
+  isSpeaking=true;ttsBtn.classList.add('speaking');ttsBtn.querySelector('span').textContent='停止';
   clearInterval(autoTimer);
-  utterance.onend=()=>{
-    isSpeaking=false;
-    ttsBtn.classList.remove('speaking');
-    ttsBtn.querySelector('span').textContent='语音';
-    resetAuto();
-  };
-  utterance.onerror=()=>{
-    isSpeaking=false;
-    ttsBtn.classList.remove('speaking');
-    ttsBtn.querySelector('span').textContent='语音';
-    resetAuto();
-  };
-  speechSynth.speak(utterance);
+  u.onend=()=>{isSpeaking=false;ttsBtn.classList.remove('speaking');ttsBtn.querySelector('span').textContent='语音';resetAuto()};
+  u.onerror=()=>{isSpeaking=false;ttsBtn.classList.remove('speaking');ttsBtn.querySelector('span').textContent='语音';resetAuto()};
+  speechSynth.speak(u);
 }
 
 ttsBtn.addEventListener('click',()=>speakSlide(current));
-
-// Load voices
-if(speechSynth.onvoiceschanged!==undefined) speechSynth.onvoiceschanged=()=>speechSynth.getVoices();
+if(speechSynth.onvoiceschanged!==undefined)speechSynth.onvoiceschanged=()=>speechSynth.getVoices();
 
 updateDisplay();
 resetAuto();

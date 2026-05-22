@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cii.中国 — 后台管理</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:#0a0a12;color:#e0e0e0;min-height:100vh}
+input,select,textarea{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;color:#e0e0e0;padding:10px 14px;font-size:14px;width:100%;outline:none;transition:border-color 0.3s}
+input:focus,select:focus,textarea:focus{border-color:#00c8ff}
+textarea{resize:vertical;min-height:80px}
+button{background:linear-gradient(135deg,#00c8ff,#7b61ff);border:none;color:#fff;padding:10px 24px;border-radius:6px;cursor:pointer;font-size:14px;transition:opacity 0.3s}
+button:hover{opacity:0.85}
+button.secondary{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12)}
+button.danger{background:linear-gradient(135deg,#ff4757,#ff6b81)}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06)}
+th{color:#5a7a90;font-size:13px;font-weight:600}
+td{font-size:14px}
+tr:hover{background:rgba(255,255,255,0.02)}
+.badge{display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px}
+.badge-super{background:rgba(123,97,255,0.2);color:#7b61ff}
+.badge-content{background:rgba(0,200,255,0.2);color:#00c8ff}
+.badge-template{background:rgba(0,255,150,0.2);color:#00ff96}
+
+/* Login */
+.login-page{display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column}
+.login-box{background:rgba(255,255,255,0.03);border:1px solid rgba(0,200,255,0.15);border-radius:16px;padding:40px;width:100%;max-width:400px}
+.login-box h2{font-size:24px;margin-bottom:24px;background:linear-gradient(135deg,#00c8ff,#7b61ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.login-box .field{margin-bottom:16px}
+.login-box label{display:block;font-size:13px;color:#5a7a90;margin-bottom:6px}
+.login-box .error{color:#ff4757;font-size:13px;margin-top:8px;display:none}
+.login-box button{width:100%;margin-top:8px}
+.login-logo{font-size:13px;color:#5a7a90;margin-bottom:30px}
+
+/* Admin layout */
+.admin-header{background:rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.06);padding:0 30px;display:flex;align-items:center;height:56px;gap:20px}
+.admin-header .brand{font-size:16px;font-weight:600;color:#00c8ff}
+.admin-header .nav{display:flex;gap:4px;flex:1;margin-left:20px}
+.admin-header .nav a{padding:8px 16px;border-radius:6px;font-size:13px;color:#8aaec8;cursor:pointer;text-decoration:none;transition:all 0.3s}
+.admin-header .nav a:hover{background:rgba(255,255,255,0.04);color:#e0e0e0}
+.admin-header .nav a.active{background:rgba(0,200,255,0.1);color:#00c8ff}
+.admin-header .user-info{font-size:13px;color:#5a7a90;display:flex;align-items:center;gap:12px}
+.admin-header .user-info .btn-logout{color:#ff4757;cursor:pointer;font-size:12px;background:none;border:none;padding:0}
+.admin-body{padding:30px;max-width:1200px;margin:0 auto}
+.page-section{display:none}
+.page-section.active{display:block}
+.page-section h3{font-size:22px;margin-bottom:20px;color:#e0e0e0}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.form-grid .full{grid-column:1/-1}
+.form-actions{display:flex;gap:10px;margin-top:8px}
+.data-table{margin-top:16px;overflow-x:auto}
+.empty-msg{color:#5a7a90;font-size:14px;padding:20px;text-align:center}
+.template-select{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.template-card{border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all 0.3s}
+.template-card:hover{border-color:#00c8ff;background:rgba(0,200,255,0.05)}
+.template-card.active{border-color:#00c8ff;background:rgba(0,200,255,0.1)}
+.template-card .icon{font-size:32px;margin-bottom:8px}
+.template-card .name{font-size:14px;color:#e0e0e0}
+@media(max-width:768px){.admin-body{padding:16px}.form-grid{grid-template-columns:1fr}.admin-header{padding:0 14px}}
+</style>
+</head>
+<body id="appBody">
+
+<!-- LOGIN -->
+<div id="loginPage" class="login-page">
+  <div class="login-logo">Cii.中国 后台管理系统</div>
+  <div class="login-box">
+    <h2>管理员登录</h2>
+    <div class="field"><label>用户名</label><input id="loginUser" placeholder="请输入用户名"></div>
+    <div class="field"><label>密码</label><input id="loginPass" type="password" placeholder="请输入密码"></div>
+    <div class="error" id="loginError">用户名或密码错误</div>
+    <button onclick="doLogin()">登 录</button>
+  </div>
+</div>
+
+<!-- ADMIN LAYOUT -->
+<div id="adminLayout" style="display:none">
+  <div class="admin-header">
+    <div class="brand">Cii.中国 后台</div>
+    <div class="nav">
+      <a class="active" onclick="switchPage('dashboard',this)">概览</a>
+      <a onclick="switchPage('content',this)">栏目内容</a>
+      <a onclick="switchPage('news',this)">新闻管理</a>
+      <a onclick="switchPage('template',this)">模板管理</a>
+      <a onclick="switchPage('admins',this)" id="navAdmins">管理员</a>
+    </div>
+    <div class="user-info">
+      <span id="currentUser"></span>
+      <button class="btn-logout" onclick="doLogout()">退出</button>
+    </div>
+  </div>
+  <div class="admin-body">
+
+    <!-- 概览 -->
+    <div class="page-section active" id="page-dashboard">
+      <h3>系统概览</h3>
+      <div class="form-grid">
+        <div class="card" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:20px">
+          <div style="font-size:12px;color:#5a7a90">栏目总数</div>
+          <div style="font-size:36px;font-weight:700;color:#00c8ff" id="statSections">0</div>
+        </div>
+        <div class="card" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:20px">
+          <div style="font-size:12px;color:#5a7a90">新闻总数</div>
+          <div style="font-size:36px;font-weight:700;color:#7b61ff" id="statNews">0</div>
+        </div>
+      </div>
+      <div style="margin-top:20px;font-size:13px;color:#5a7a90;line-height:2">
+        <p>当前用户：<strong id="dashUser"></strong></p>
+        <p>角色：<strong id="dashRole"></strong></p>
+        <p>上次登录：<span id="dashLastLogin">首次登录</span></p>
+      </div>
+    </div>
+
+    <!-- 栏目内容管理 -->
+    <div class="page-section" id="page-content">
+      <h3>栏目内容管理</h3>
+      <div class="form-grid">
+        <div class="full"><label>选择栏目</label>
+          <select id="sectionSelect" onchange="loadSectionContent()"></select>
+        </div>
+        <div class="full"><label>文章标题</label><input id="articleTitle" placeholder="输入文章标题"></div>
+        <div class="full"><label>文章内容</label><textarea id="articleBody" placeholder="输入文章内容"></textarea></div>
+        <div><label>发布日期</label><input id="articleDate" placeholder="如 2026-04-30"></div>
+        <div><label>来源</label><input id="articleSource" placeholder="来源名称"></div>
+      </div>
+      <div class="form-actions">
+        <button onclick="addArticle()">添加文章</button>
+        <button class="secondary" onclick="clearArticleForm()">清空</button>
+      </div>
+      <div class="data-table" id="articleList"></div>
+    </div>
+
+    <!-- 新闻管理 -->
+    <div class="page-section" id="page-news">
+      <h3>新闻管理</h3>
+      <div class="form-grid">
+        <div class="full"><label>新闻标题</label><input id="newsTitle" placeholder="输入新闻标题"></div>
+        <div class="full"><label>新闻内容</label><textarea id="newsBody" placeholder="输入新闻内容"></textarea></div>
+        <div><label>日期</label><input id="newsDate" placeholder="2026-04-30"></div>
+        <div><label>标签</label><input id="newsTag" placeholder="如 时政深一度"></div>
+      </div>
+      <div class="form-actions">
+        <button onclick="addNews()">添加新闻</button>
+        <button class="secondary" onclick="document.getElementById('newsTitle').value='';document.getElementById('newsBody').value='';document.getElementById('newsDate').value='';document.getElementById('newsTag').value=''">清空</button>
+      </div>
+      <div class="data-table" id="newsList"></div>
+    </div>
+
+    <!-- 模板管理 -->
+    <div class="page-section" id="page-template">
+      <h3>模板管理</h3>
+      <div style="font-size:14px;color:#5a7a90;margin-bottom:16px">选择显示风格，切换后前台展示页面会应用新模板。</div>
+      <div class="template-select" id="templateGrid"></div>
+      <div style="margin-top:16px">
+        <label>新增模板名称</label>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <input id="newTemplateName" placeholder="输入模板名称" style="flex:1">
+          <button onclick="addTemplate()">新增模板</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 管理员管理 -->
+    <div class="page-section" id="page-admins">
+      <h3>管理员管理</h3>
+      <div class="form-grid">
+        <div><label>用户名</label><input id="adminUser" placeholder="输入用户名"></div>
+        <div><label>密码</label><input id="adminPass" type="password" placeholder="输入密码"></div>
+        <div class="full"><label>角色</label>
+          <select id="adminRole">
+            <option value="superadmin">超级管理员</option>
+            <option value="content">内容管理员</option>
+            <option value="template">模板管理员</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button onclick="addAdmin()">添加管理员</button>
+      </div>
+      <div class="data-table" id="adminList"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ======================== DATA LAYER ========================
+const STORAGE_KEY='cii_admin_data';
+
+function getDefaultData(){
+  return {
+    admins:[
+      {id:'s1',user:'superadmin',pass:'admin123',role:'superadmin',name:'超级管理员'},
+      {id:'c1',user:'content',pass:'content123',role:'content',name:'内容管理员'},
+      {id:'t1',user:'template',pass:'template123',role:'template',name:'模板管理员'}
+    ],
+    sections:{},
+    news:[
+      {id:'n0',title:'习近平强调以更大力度加强基础研究 提升原始创新能力',body:'中共中央总书记、国家主席、中央军委主席习近平近日在考察时强调...',date:'2026-04-30',tag:'时政深一度'},
+      {id:'n1',title:'中巴建交75周年：巴基斯坦总统以最高礼仪致敬中国开国领袖',body:'在庆祝中巴建交75周年之际，巴基斯坦总统以最高礼仪向中国开国领袖致敬...',date:'2026-04-28',tag:'文明公约'}
+    ],
+    templates:[
+      {id:'t1',name:'暗色科技',icon:'🚀',active:true},
+      {id:'t2',name:'中国水墨',icon:'🎋',active:false},
+      {id:'t3',name:'极简白',icon:'✨',active:false}
+    ],
+    currentTemplate:'t1',
+    session:{}
+  };
+}
+
+function getData(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(raw)return JSON.parse(raw);
+  }catch(e){}
+  return null;
+}
+
+function initData(){
+  let d=getData();
+  if(!d){
+    d=getDefaultData();
+    saveData(d);
+  }
+  return d;
+}
+
+function saveData(d){localStorage.setItem(STORAGE_KEY,JSON.stringify(d))}
+
+// ======================== AUTH ========================
+let data=initData();
+let currentUser=null;
+
+function doLogin(){
+  const user=document.getElementById('loginUser').value.trim();
+  const pass=document.getElementById('loginPass').value.trim();
+  const found=data.admins.find(a=>a.user===user&&a.pass===pass);
+  if(!found){
+    document.getElementById('loginError').style.display='block';
+    return;
+  }
+  currentUser=found;
+  data.session={user:found.user,role:found.role,time:new Date().toISOString()};
+  saveData(data);
+  showAdmin();
+}
+
+function doLogout(){
+  currentUser=null;
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('adminLayout').style.display='none';
+  document.getElementById('loginUser').value='';
+  document.getElementById('loginPass').value='';
+}
+
+function showAdmin(){
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('adminLayout').style.display='block';
+  document.getElementById('currentUser').textContent=currentUser.user+' ('+getRoleLabel(currentUser.role)+')';
+  document.getElementById('dashUser').textContent=currentUser.user;
+  document.getElementById('dashRole').textContent=getRoleLabel(currentUser.role);
+  document.getElementById('dashLastLogin').textContent=data.session.time?new Date(data.session.time).toLocaleString():'首次登录';
+  document.getElementById('statSections').textContent=Object.keys(data.sections).length;
+  document.getElementById('statNews').textContent=data.news.length;
+
+  // Show/hide admin management tab based on role
+  if(currentUser.role!=='superadmin'){
+    document.getElementById('navAdmins').style.display='none';
+  }else{
+    document.getElementById('navAdmins').style.display='inline';
+  }
+  loadAll();
+}
+
+function getRoleLabel(r){
+  return r==='superadmin'?'超级管理员':r==='content'?'内容管理员':r==='template'?'模板管理员':'未知';
+}
+
+// ======================== PAGE SWITCH ========================
+function switchPage(name,el){
+  document.querySelectorAll('.page-section').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav a').forEach(a=>a.classList.remove('active'));
+  if(el)el.classList.add('active');
+}
+
+function hasAccess(roles){
+  if(!currentUser)return false;
+  if(currentUser.role==='superadmin')return true;
+  if(typeof roles==='string')return currentUser.role===roles;
+  return roles.includes(currentUser.role);
+}
+
+// ======================== SECTIONS / CONTENT ========================
+const sectionKeys=['shizheng','fenghuo','jingwei','sheji','keji','liebian','ziyuan','chongtu','kexue','wenming','qianxuesen','mantou','crown','water'];
+const sectionNames={shizheng:'时政深一度',fenghuo:'烽火铁甲',jingwei:'经纬脉搏',sheji:'社稷春秋',keji:'科技双刃',liebian:'裂变重溯',ziyuan:'资源配置',chongtu:'冲突重构',kexue:'科学探索',wenming:'文明博弈',qianxuesen:'伤痕铸就星辰的归国之路',mantou:'馒头与星辰',crown:'百元美钞上的王冠',water:'水的囚徒'};
+
+function loadSectionContent(){
+  const sel=document.getElementById('sectionSelect');
+  const key=sel.value;
+  if(!key)return;
+  const section=data.sections[key]||{articles:[]};
+  renderArticles(key,section.articles);
+}
+
+function renderArticles(key,articles){
+  const container=document.getElementById('articleList');
+  if(!articles||articles.length===0){
+    container.innerHTML='<div class="empty-msg">暂无文章，请在下方添加</div>';
+    return;
+  }
+  let html='<table><tr><th>标题</th><th>日期</th><th>操作</th></tr>';
+  articles.forEach((a,i)=>{
+    html+='<tr><td>'+a.h+'</td><td>'+(a.m||'-')+'</td><td><button class="danger" style="padding:4px 12px;font-size:12px" onclick="deleteArticle(\''+key+'\','+i+')">删除</button></td></tr>';
+  });
+  html+='</table>';
+  container.innerHTML=html;
+}
+
+function addArticle(){
+  if(!hasAccess(['superadmin','content'])){alert('权限不足');return}
+  const key=document.getElementById('sectionSelect').value;
+  if(!key){alert('请选择栏目');return}
+  const h=document.getElementById('articleTitle').value.trim();
+  const p=document.getElementById('articleBody').value.trim();
+  if(!h){alert('请输入标题');return}
+  if(!data.sections[key])data.sections[key]={articles:[]};
+  data.sections[key].articles.push({h:h,p:p||'暂无内容',m:document.getElementById('articleDate').value||'','source':document.getElementById('articleSource').value||''});
+  saveData(data);
+  clearArticleForm();
+  loadSectionContent();
+}
+
+function deleteArticle(key,idx){
+  if(!confirm('确认删除？'))return;
+  if(data.sections[key]&&data.sections[key].articles)data.sections[key].articles.splice(idx,1);
+  saveData(data);
+  loadSectionContent();
+}
+
+function clearArticleForm(){
+  document.getElementById('articleTitle').value='';
+  document.getElementById('articleBody').value='';
+  document.getElementById('articleDate').value='';
+  document.getElementById('articleSource').value='';
+}
+
+// ======================== NEWS ========================
+function renderNews(){
+  const container=document.getElementById('newsList');
+  if(data.news.length===0){
+    container.innerHTML='<div class="empty-msg">暂无新闻</div>';return;
+  }
+  let html='<table><tr><th>标题</th><th>日期</th><th>标签</th><th>操作</th></tr>';
+  data.news.forEach((n,i)=>{
+    html+='<tr><td>'+n.title+'</td><td>'+(n.date||'-')+'</td><td>'+(n.tag||'-')+'</td><td><button class="danger" style="padding:4px 12px;font-size:12px" onclick="deleteNews('+i+')">删除</button></td></tr>';
+  });
+  html+='</table>';
+  container.innerHTML=html;
+}
+
+function addNews(){
+  if(!hasAccess(['superadmin','content'])){alert('权限不足');return}
+  const title=document.getElementById('newsTitle').value.trim();
+  if(!title){alert('请输入新闻标题');return}
+  data.news.push({id:'n'+Date.now(),title:title,body:document.getElementById('newsBody').value.trim(),date:document.getElementById('newsDate').value.trim(),tag:document.getElementById('newsTag').value.trim()});
+  saveData(data);
+  document.getElementById('newsTitle').value='';document.getElementById('newsBody').value='';document.getElementById('newsDate').value='';document.getElementById('newsTag').value='';
+  renderNews();
+  document.getElementById('statNews').textContent=data.news.length;
+}
+
+function deleteNews(idx){
+  if(!confirm('确认删除？'))return;
+  data.news.splice(idx,1);
+  saveData(data);
+  renderNews();
+  document.getElementById('statNews').textContent=data.news.length;
+}
+
+// ======================== TEMPLATES ========================
+function renderTemplates(){
+  const grid=document.getElementById('templateGrid');
+  grid.innerHTML='';
+  data.templates.forEach(t=>{
+    const card=document.createElement('div');
+    card.className='template-card'+(t.active?' active':'');
+    if(hasAccess(['superadmin','template']))card.onclick=()=>selectTemplate(t.id);
+    card.innerHTML='<div class="icon">'+(t.icon||'📄')+'</div><div class="name">'+t.name+'</div>';
+    grid.appendChild(card);
+  });
+}
+
+function selectTemplate(id){
+  if(!hasAccess(['superadmin','template'])){alert('权限不足');return}
+  data.templates.forEach(t=>t.active=(t.id===id));
+  data.currentTemplate=id;
+  saveData(data);
+  renderTemplates();
+  alert('模板已切换为：「'+data.templates.find(t=>t.id===id).name+'」');
+}
+
+function addTemplate(){
+  if(!hasAccess(['superadmin','template'])){alert('权限不足');return}
+  const name=document.getElementById('newTemplateName').value.trim();
+  if(!name){alert('请输入模板名称');return}
+  data.templates.push({id:'tm'+Date.now(),name:name,icon:'📄',active:false});
+  saveData(data);
+  document.getElementById('newTemplateName').value='';
+  renderTemplates();
+}
+
+// ======================== ADMIN MANAGEMENT ========================
+function renderAdmins(){
+  if(currentUser.role!=='superadmin'){document.getElementById('adminList').innerHTML='';return}
+  const container=document.getElementById('adminList');
+  let html='<table><tr><th>用户名</th><th>角色</th><th>操作</th></tr>';
+  data.admins.forEach((a,i)=>{
+    html+='<tr><td>'+a.user+'</td><td><span class="badge badge-'+a.role+'">'+getRoleLabel(a.role)+'</span></td><td>'+(data.admins.length>1?'<button class="danger" style="padding:4px 12px;font-size:12px" onclick="deleteAdmin(\''+a.id+'\')">删除</button>':'')+'</td></tr>';
+  });
+  html+='</table>';
+  container.innerHTML=html;
+}
+
+function addAdmin(){
+  if(currentUser.role!=='superadmin'){alert('权限不足');return}
+  const user=document.getElementById('adminUser').value.trim();
+  const pass=document.getElementById('adminPass').value.trim();
+  const role=document.getElementById('adminRole').value;
+  if(!user||!pass){alert('请输入用户名和密码');return}
+  if(data.admins.find(a=>a.user===user)){alert('用户名已存在');return}
+  data.admins.push({id:'a'+Date.now(),user:user,pass:pass,role:role,name:user});
+  saveData(data);
+  document.getElementById('adminUser').value='';document.getElementById('adminPass').value='';
+  renderAdmins();
+}
+
+function deleteAdmin(id){
+  if(currentUser.role!=='superadmin')return;
+  if(data.admins.length<=1){alert('至少保留一个管理员');return}
+  if(!confirm('确认删除此管理员？'))return;
+  data.admins=data.admins.filter(a=>a.id!==id);
+  saveData(data);
+  renderAdmins();
+}
+
+// ======================== INIT ========================
+function loadAll(){
+  // Sections dropdown
+  const sel=document.getElementById('sectionSelect');
+  sel.innerHTML='<option value="">-- 选择栏目 --</option>'+sectionKeys.map(k=>'<option value="'+k+'">'+sectionNames[k]+'</option>').join('')+'<option value="custom">+ 自定义栏目</option>';
+  loadSectionContent();
+  renderNews();
+  renderTemplates();
+  renderAdmins();
+}
+
+// Check session
+if(data.session&&data.session.user){
+  const found=data.admins.find(a=>a.user===data.session.user);
+  if(found){
+    currentUser=found;
+    showAdmin();
+    return;
+  }
+}
+</script>
+</body>
+</html>
