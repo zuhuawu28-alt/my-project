@@ -12,9 +12,17 @@ def divide(a, b):
         return "错误：除数不能为 0"
     return a / b
 
+def power(a, b):
+    return a ** b
+
+def modulo(a, b):
+    if b == 0:
+        return "错误：除数不能为 0"
+    return a % b
+
 def main():
     print("=== 简单计算器 ===")
-    print("支持运算：+ (加), - (减), * (乘), / (除)")
+    print("支持运算：+ (加), - (减), * (乘), / (除), ^ (幂), % (取余)")
     print("输入 q 退出")
 
     while True:
@@ -43,6 +51,10 @@ def main():
             result = multiply(a, b)
         elif op == '/':
             result = divide(a, b)
+        elif op == '^':
+            result = power(a, b)
+        elif op == '%':
+            result = modulo(a, b)
         else:
             print("不支持的运算符")
             continue
