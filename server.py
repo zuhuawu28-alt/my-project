@@ -1,28 +1,79 @@
 from flask import Flask, request, jsonify, send_from_directory
-import json, os, uuid, threading, datetime, shutil
+import json, os, uuid, threading, datetime
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), 'uploads')
 LOCK = threading.Lock()
 
-def data_path(name):
-    return os.path.join(DATA_DIR, name + '.json')
+def data_path(name): return os.path.join(DATA_DIR, name + '.json')
 
 def read_json(name):
     p = data_path(name)
     if not os.path.exists(p): return {}
     with LOCK:
-        with open(p, 'r', encoding='utf-8') as f:
-            return json.load(f)
+        with open(p, 'r', encoding='utf-8') as f: return json.load(f)
 
 def write_json(name, data):
     with LOCK:
         with open(data_path(name), 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
-def now():
-    return datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+def now(): return datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+
+SECTIONS_DATA = [
+  {"key":"shizheng","name":"时政深一度","parent":"","order":1},
+  {"key":"fenghuo","name":"烽火铁甲","parent":"","order":2},
+  {"key":"jingwei","name":"经纬脉搏","parent":"","order":3},
+  {"key":"sheji","name":"社稷春秋","parent":"","order":4},
+  {"key":"houxique","name":"后稀缺时代","parent":"","order":5},
+  {"key":"keji","name":"科技双刃","parent":"houxique","order":1},
+  {"key":"zhineng","name":"智能革命","parent":"keji","order":1},
+  {"key":"jiyin","name":"基因边界","parent":"keji","order":2},
+  {"key":"xushi","name":"虚实重构","parent":"keji","order":3},
+  {"key":"nengyuan","name":"能源革命","parent":"keji","order":4},
+  {"key":"diyuan","name":"地缘裂变","parent":"keji","order":5},
+  {"key":"diqiu","name":"地球工程","parent":"keji","order":6},
+  {"key":"liebian","name":"裂变重溯","parent":"houxique","order":2},
+  {"key":"gongying","name":"供应链战","parent":"liebian","order":1},
+  {"key":"duobian","name":"多边新生","parent":"liebian","order":2},
+  {"key":"zimeiti","name":"自媒体悖论","parent":"liebian","order":3},
+  {"key":"renzhi","name":"认知升维","parent":"liebian","order":4},
+  {"key":"xushiwen","name":"虚实文明","parent":"liebian","order":5},
+  {"key":"qidian","name":"奇点信仰","parent":"liebian","order":6},
+  {"key":"lanxing","name":"蓝星体系","parent":"","order":6},
+  {"key":"ziyuan","name":"资源配置","parent":"lanxing","order":1},
+  {"key":"jiyinsu","name":"基因溯源","parent":"ziyuan","order":1},
+  {"key":"zijiao","name":"资源角力","parent":"ziyuan","order":2},
+  {"key":"shengtai","name":"生态武器","parent":"ziyuan","order":3},
+  {"key":"zhenying","name":"阵营博弈","parent":"ziyuan","order":4},
+  {"key":"dailiren","name":"代理人战","parent":"ziyuan","order":5},
+  {"key":"wenmingg","name":"文明公约","parent":"ziyuan","order":6},
+  {"key":"chongtu","name":"冲突重构","parent":"lanxing","order":2},
+  {"key":"yineng","name":"异能觉醒","parent":"chongtu","order":1},
+  {"key":"hongan","name":"红岸突围","parent":"chongtu","order":2},
+  {"key":"shengwei","name":"升维实验","parent":"chongtu","order":3},
+  {"key":"xingji","name":"星际建构","parent":"chongtu","order":4},
+  {"key":"jinqu","name":"禁区法则","parent":"chongtu","order":5},
+  {"key":"pingdeng","name":"平等转型","parent":"chongtu","order":6},
+  {"key":"diwai","name":"地外文明","parent":"","order":7},
+  {"key":"kexue","name":"科学探索","parent":"diwai","order":1},
+  {"key":"shenkong","name":"深空探秘","parent":"kexue","order":1},
+  {"key":"xingxing","name":"行星考古","parent":"kexue","order":2},
+  {"key":"guance","name":"观测矩阵","parent":"kexue","order":3},
+  {"key":"yixing","name":"异星生态","parent":"kexue","order":4},
+  {"key":"jiduan","name":"极端适应","parent":"kexue","order":5},
+  {"key":"shengwub","name":"生物标踪","parent":"kexue","order":6},
+  {"key":"wenmingb","name":"文明博弈","parent":"diwai","order":2},
+  {"key":"jiechu","name":"接触准则","parent":"wenmingb","order":1},
+  {"key":"chongtu2","name":"冲突预案","parent":"wenmingb","order":2},
+  {"key":"xinyang","name":"信仰重构","parent":"wenmingb","order":3},
+  {"key":"lianhe","name":"联合探秘","parent":"wenmingb","order":4},
+  {"key":"gongmin","name":"公民科探","parent":"wenmingb","order":5},
+  {"key":"kechuan","name":"科传平衡","parent":"wenmingb","order":6},
+  {"key":"pojian","name":"破茧者说","parent":"","order":8},
+  {"key":"xindeng","name":"心灯无界","parent":"","order":9}
+]
 
 def ensure_defaults():
     if not os.path.exists(data_path('admins')):
@@ -31,19 +82,12 @@ def ensure_defaults():
             {'id':'c1','user':'content','pass':'content123','role':'content','name':'内容管理员'},
             {'id':'t1','user':'template','pass':'template123','role':'template','name':'模板管理员'}
         ])
+    if not os.path.exists(data_path('sections')):
+        write_json('sections', SECTIONS_DATA)
     if not os.path.exists(data_path('articles')):
-        write_json('articles', [
-            {'id':'a0','section':'shizheng','title':'习近平强调以更大力度加强基础研究 提升原始创新能力','content':'中共中央总书记、国家主席、中央军委主席习近平近日在考察时强调，要瞄准世界科技前沿，以更大力度加强基础研究，提升原始创新能力，为实现高水平科技自立自强提供有力支撑。','images':[],'videos':[],'comments':[],'source':'新华社','date':'2026-04-30','featured':True},
-            {'id':'a1','section':'shizheng','title':'习近平强调"义乌发展经验"：因地制宜探索高质量发展之路','content':'习近平在浙江考察时指出，义乌的发展经验是中国特色社会主义在县域层面的生动实践，要因地制宜探索高质量发展之路。','images':[],'videos':[],'comments':[],'source':'新华社','date':'2026-04-25','featured':False},
-            {'id':'a2','section':'fenghuo','title':'中国海军宣传片引猜想：第四艘航母是否已"出鞘"？','content':'中国海军最新发布的宣传片中出现的新航母画面引发广泛关注。分析人士指出，这可能是中国第四艘航母的首次公开亮相。','images':[],'videos':[],'comments':[],'source':'央视军事','date':'2026-04-28','featured':True},
-            {'id':'a3','section':'ziyuan','title':'中巴建交75周年：巴基斯坦总统以最高礼仪致敬中国开国领袖','content':'在庆祝中巴建交75周年之际，巴基斯坦总统以最高礼仪向中国开国领袖致敬，体现两国深厚情谊。','images':[],'videos':[],'comments':[],'source':'新华社','date':'2026-04-28','featured':True},
-            {'id':'a4','section':'kexue','title':'中国科学家发布天文AI模型"星衍"：发现160余个宇宙早期星系','content':'中国科学家发布天文AI模型"星衍"，探测深度跃升1星等，发现160余个宇宙早期星系。','images':[],'videos':[],'comments':[],'source':'科技日报','date':'2026-02-21','featured':False}
-        ])
+        write_json('articles', [])
     if not os.path.exists(data_path('videos')):
-        write_json('videos', [
-            {'id':'v1','title':'中国航天：星辰大海','desc':'中国航天事业发展历程','url':'https://www.youtube.com/embed/dQw4w9WgXcQ','thumb':'🚀','date':'2026-04'},
-            {'id':'v2','title':'未来科技趋势','desc':'人工智能与未来生活','url':'https://www.youtube.com/embed/dQw4w9WgXcQ','thumb':'🤖','date':'2026-03'}
-        ])
+        write_json('videos', [])
     if not os.path.exists(data_path('templates')):
         write_json('templates', [
             {'id':'t1','name':'暗色科技','icon':'🚀','active':True,'css':':root{--bg:#050510;--bg2:#0a0a1a;--bg3:rgba(255,255,255,0.03);--bg4:rgba(0,200,255,0.05);--primary:#00c8ff;--secondary:#7b61ff;--accent:#ff61d8;--text:#e0e0e0;--text2:#8aaec8;--text3:#5a7a90;--border:rgba(0,200,255,0.12);--card-bg:rgba(255,255,255,0.03);--card-hover:rgba(0,200,255,0.06);--header-bg:linear-gradient(180deg,rgba(5,5,16,0.95),transparent);--font:\'Microsoft YaHei\',\'PingFang SC\',sans-serif;--radius:12px;--glow:0 0 30px rgba(0,200,255,0.08);--hero-gradient:linear-gradient(135deg,#00c8ff,#7b61ff)}'},
@@ -52,31 +96,32 @@ def ensure_defaults():
         ])
     if not os.path.exists(data_path('session')):
         write_json('session', {})
-    if not os.path.exists(data_path('sections')):
-        write_json('sections', {'shizheng':'时政深一度','fenghuo':'烽火铁甲','jingwei':'经纬脉搏','sheji':'社稷春秋','keji':'科技双刃','liebian':'裂变重溯','ziyuan':'资源配置','chongtu':'冲突重构','kexue':'科学探索','wenming':'文明博弈','qianxuesen':'伤痕铸就星辰的归国之路','mantou':'馒头与星辰','crown':'百元美钞上的王冠','water':'水的囚徒'})
 
 ensure_defaults()
 
+def get_section_tree():
+    sections = read_json('sections')
+    if isinstance(sections, list): return sections
+    return []
+
+def get_children(parent_key, all_sec):
+    return [s for s in all_sec if s.get('parent') == parent_key]
+
 @app.route('/')
 def index(): return send_from_directory('.', 'index.html')
-
 @app.route('/admin')
 def admin(): return send_from_directory('.', 'admin.html')
-
 @app.route('/uploads/<path:filename>')
 def uploaded(filename): return send_from_directory(UPLOAD_DIR, filename)
 
 @app.route('/api/login', methods=['POST'])
 def api_login():
     body = request.get_json()
-    admins = read_json('admins')
-    found = None
-    for a in admins:
+    for a in read_json('admins'):
         if a['user'] == body.get('user','') and a['pass'] == body.get('pass',''):
-            found = a; break
-    if not found: return jsonify({'ok':False,'msg':'用户名或密码错误'})
-    write_json('session', {'user':found['user'],'role':found['role'],'time':now()})
-    return jsonify({'ok':True,'user':found['user'],'role':found['role']})
+            write_json('session', {'user':a['user'],'role':a['role'],'time':now()})
+            return jsonify({'ok':True,'user':a['user'],'role':a['role']})
+    return jsonify({'ok':False,'msg':'用户名或密码错误'})
 
 @app.route('/api/logout', methods=['POST'])
 def api_logout(): write_json('session', {}); return jsonify({'ok':True})
@@ -91,8 +136,7 @@ def api_check_session():
         for a in read_json('admins'):
             if a['user'] == s['user']:
                 return jsonify({'ok':True,'user':a['user'],'role':a['role']})
-    write_json('session', {})
-    return jsonify({'ok':False})
+    write_json('session', {}); return jsonify({'ok':False})
 
 def check_role():
     s = read_json('session')
@@ -111,8 +155,7 @@ def api_get_data():
 
 @app.route('/api/data', methods=['POST'])
 def api_save_data():
-    body = request.get_json()
-    role = check_role()
+    body = request.get_json(); role = check_role()
     if not role: return jsonify({'ok':False,'msg':'未登录'})
     if 'articles' in body and role in ('superadmin','content'): write_json('articles', body['articles'])
     if 'videos' in body and role in ('superadmin','content'): write_json('videos', body['videos'])
@@ -126,7 +169,7 @@ def api_frontend_data():
     return jsonify({
         'articles': read_json('articles'),
         'videos': read_json('videos'),
-        'sections': read_json('sections')
+        'sections': get_section_tree()
     })
 
 @app.route('/api/template/css')
@@ -137,13 +180,10 @@ def api_template_css():
 
 @app.route('/api/comments', methods=['GET'])
 def api_get_comments():
-    articles = read_json('articles')
     all_comments = []
-    for a in articles:
+    for a in read_json('articles'):
         for c in a.get('comments',[]):
-            c['articleTitle'] = a['title']
-            c['articleId'] = a['id']
-            all_comments.append(c)
+            c['articleTitle'] = a['title']; c['articleId'] = a['id']; all_comments.append(c)
     return jsonify(all_comments)
 
 @app.route('/api/comments/approve', methods=['POST'])
@@ -151,47 +191,31 @@ def api_approve_comment():
     role = check_role()
     if not role or role not in ('superadmin','content'): return jsonify({'ok':False,'msg':'权限不足'})
     body = request.get_json()
-    cid = body.get('id')
     articles = read_json('articles')
     for a in articles:
         for c in a.get('comments',[]):
-            if c['id'] == cid:
-                c['approved'] = body.get('approved', True)
-                write_json('articles', articles)
-                return jsonify({'ok':True})
+            if c['id'] == body.get('id'): c['approved'] = body.get('approved',True); write_json('articles', articles); return jsonify({'ok':True})
     return jsonify({'ok':False,'msg':'未找到留言'})
 
 @app.route('/api/comments/delete', methods=['POST'])
 def api_delete_comment():
     role = check_role()
     if not role or role not in ('superadmin','content'): return jsonify({'ok':False,'msg':'权限不足'})
-    body = request.get_json()
-    cid = body.get('id')
+    cid = request.get_json().get('id')
     articles = read_json('articles')
-    for a in articles:
-        a['comments'] = [c for c in a.get('comments',[]) if c['id'] != cid]
-    write_json('articles', articles)
-    return jsonify({'ok':True})
+    for a in articles: a['comments'] = [c for c in a.get('comments',[]) if c['id'] != cid]
+    write_json('articles', articles); return jsonify({'ok':True})
 
 @app.route('/api/comment', methods=['POST'])
 def api_add_comment():
     body = request.get_json()
-    aid = body.get('articleId')
-    user = body.get('user','访客').strip() or '访客'
-    content = body.get('content','').strip()
+    aid = body.get('articleId'); content = body.get('content','').strip()
     if not aid or not content: return jsonify({'ok':False,'msg':'参数不完整'})
     articles = read_json('articles')
     for a in articles:
         if a['id'] == aid:
-            a.setdefault('comments',[]).append({
-                'id':'c'+str(uuid.uuid4())[:8],
-                'user':user,
-                'content':content,
-                'time':now(),
-                'approved':False
-            })
-            write_json('articles', articles)
-            return jsonify({'ok':True})
+            a.setdefault('comments',[]).append({'id':'c'+str(uuid.uuid4())[:8],'user':body.get('user','访客').strip() or '访客','content':content,'time':now(),'approved':False})
+            write_json('articles', articles); return jsonify({'ok':True})
     return jsonify({'ok':False,'msg':'文章不存在'})
 
 @app.route('/api/upload', methods=['POST'])
@@ -211,6 +235,4 @@ def api_upload():
 if __name__ == '__main__':
     port = 5099
     print(f'Cii.China 服务器启动: http://localhost:{port}')
-    print(f'前台: http://localhost:{port}')
-    print(f'后台: http://localhost:{port}/admin')
     app.run(host='0.0.0.0', port=port, debug=False)

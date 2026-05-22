@@ -54,7 +54,7 @@ tr:hover{background:rgba(255,255,255,0.02)}
 .data-table{margin-top:12px;overflow-x:auto}
 .empty-msg{color:#5a7a90;font-size:13px;padding:16px;text-align:center}
 .template-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:16px}
-.template-card{border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:all 0.3s}
+.template-card{border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:all 0.3s;position:relative}
 .template-card:hover{border-color:#00c8ff;background:rgba(0,200,255,0.05)}
 .template-card.active{border-color:#00c8ff;background:rgba(0,200,255,0.12)}
 .template-card .icon{font-size:28px;margin-bottom:6px}
@@ -62,10 +62,9 @@ tr:hover{background:rgba(255,255,255,0.02)}
 .template-card .preview{font-size:10px;color:#5a7a90;margin-top:4px}
 .template-card .del{position:absolute;top:6px;right:6px;background:rgba(255,71,87,0.2);border:none;color:#ff4757;border-radius:4px;cursor:pointer;font-size:12px;padding:2px 6px;display:none}
 .template-card:hover .del{display:block}
-.article-images{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
-.article-images img{width:80px;height:60px;object-fit:cover;border-radius:4px;border:1px solid rgba(255,255,255,0.08)}
-.article-images .img-del{position:absolute;top:-4px;right:-4px;background:#ff4757;border:none;color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;line-height:18px;text-align:center}
 .image-thumb-wrap{position:relative;display:inline-block}
+.image-thumb-wrap img{width:80px;height:60px;object-fit:cover;border-radius:4px;border:1px solid rgba(255,255,255,0.08)}
+.image-thumb-wrap .img-del{position:absolute;top:-4px;right:-4px;background:#ff4757;border:none;color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;line-height:18px;text-align:center}
 .image-input-row{display:flex;gap:6px;margin:4px 0}
 .image-input-row input{flex:1}
 .collapse-section{margin-bottom:12px}
@@ -77,10 +76,17 @@ tr:hover{background:rgba(255,255,255,0.02)}
 .comment-item{padding:8px 12px;margin:4px 0;background:rgba(255,255,255,0.02);border-radius:6px;border-left:3px solid rgba(255,200,0,0.3)}
 .comment-item.approved{border-left-color:#00ff96}
 .comment-item .meta{font-size:11px;color:#5a7a90;margin-top:4px}
-.tab-bar{display:flex;gap:4px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:4px}
-.tab-bar button{background:none;border:none;color:#5a7a90;padding:6px 16px;cursor:pointer;font-size:13px;border-radius:4px 4px 0 0}
+.tab-bar{display:flex;gap:4px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:4px;overflow-x:auto}
+.tab-bar button{background:none;border:none;color:#5a7a90;padding:6px 16px;cursor:pointer;font-size:13px;border-radius:4px 4px 0 0;white-space:nowrap}
 .tab-bar button.active{color:#00c8ff;background:rgba(0,200,255,0.06)}
 .css-editor{width:100%;min-height:200px;font-family:'Consolas','Courier New',monospace;font-size:12px;line-height:1.6;tab-size:2}
+.tree-line{padding-left:20px;border-left:1px dashed rgba(255,255,255,0.08);margin:4px 0}
+.tree-item{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:4px;transition:background 0.2s}
+.tree-item:hover{background:rgba(255,255,255,0.03)}
+.tree-item .sec-tag{font-size:10px;color:#5a7a90;background:rgba(255,255,255,0.04);padding:1px 6px;border-radius:3px}
+.tree-item .sec-children{font-size:11px;color:var(--text3)}
+.hierarchy-select{position:relative}
+.hierarchy-select select{width:100%}
 @media(max-width:768px){.admin-body{padding:12px}.form-grid{grid-template-columns:1fr}.admin-header{padding:0 10px}.admin-header .brand{font-size:13px}.admin-header .nav a{padding:4px 8px;font-size:11px}}
 </style>
 </head>
@@ -125,7 +131,7 @@ tr:hover{background:rgba(255,255,255,0.02)}
           <div style="font-size:32px;font-weight:700;color:#00c8ff" id="statArticles">0</div>
         </div>
         <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:16px">
-          <div style="font-size:11px;color:#5a7a90">栏目总数</div>
+          <div style="font-size:11px;color:#5a7a90">一级栏目</div>
           <div style="font-size:32px;font-weight:700;color:#7b61ff" id="statSections">0</div>
         </div>
         <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:16px">
@@ -139,13 +145,17 @@ tr:hover{background:rgba(255,255,255,0.02)}
       </div>
       <div style="margin-top:16px;font-size:13px;color:#5a7a90;line-height:2">
         <p>当前用户：<strong id="dashUser"></strong> · 角色：<strong id="dashRole"></strong></p>
+        <p>总栏目数：<strong id="statTotalSections">0</strong>（一级 <span id="statRootSections">0</span> · 子级 <span id="statChildSections">0</span>）</p>
       </div>
     </div>
 
     <!-- 文章管理 -->
     <div class="page-section" id="page-articles">
       <h3>文章管理</h3>
-      <div class="tab-bar" id="articleTabBar"></div>
+      <div class="hierarchy-select">
+        <label style="font-size:12px;color:#5a7a90">选择栏目（支持三级层级）</label>
+        <select id="artSection" style="margin:4px 0 10px"></select>
+      </div>
       <div id="articleEditor">
         <div class="form-grid">
           <div class="full"><label>文章标题</label><input id="artTitle" placeholder="输入文章标题"></div>
@@ -167,40 +177,37 @@ tr:hover{background:rgba(255,255,255,0.02)}
           <div><label>来源</label><input id="artSource" placeholder="如 新华社"></div>
           <div><label>日期</label><input id="artDate" placeholder="2026-04-30"></div>
           <div><label>精选展示</label><select id="artFeatured"><option value="true">是</option><option value="false">否</option></select></div>
-          <div><label>所属栏目</label><select id="artSection"></select></div>
         </div>
-
         <div class="collapse-section">
-          <div class="collapse-header" onclick="toggleCollapse(this)"><span class="arrow">▶</span> 图片管理（粘贴图片URL或上传）</div>
+          <div class="collapse-header" onclick="toggleCollapse(this)"><span class="arrow">▶</span> 图片管理</div>
           <div class="collapse-body" style="display:none">
             <div class="image-input-row">
-              <input id="artImageUrl" placeholder="输入图片URL，如 https://example.com/image.jpg">
+              <input id="artImageUrl" placeholder="粘贴图片URL">
               <button class="sm ghost" onclick="addImageUrl()">添加URL</button>
-              <button class="sm success" onclick="triggerUpload('image')">上传图片</button>
-              <input type="file" id="uploadImageInput" accept="image/*" style="display:none" onchange="handleUpload(this,'images')">
+              <button class="sm success" onclick="document.getElementById('uploadImageInput').click()">上传图片</button>
+              <input type="file" id="uploadImageInput" accept="image/*" style="display:none" onchange="handleUpload(this)">
             </div>
-            <div class="article-images" id="artImagesPreview"></div>
+            <div class="article-images" id="artImagesPreview" style="display:flex;flex-wrap:wrap;gap:8px;margin:6px 0"></div>
           </div>
         </div>
-
         <div class="collapse-section">
           <div class="collapse-header" onclick="toggleCollapse(this)"><span class="arrow">▶</span> 视频嵌入</div>
           <div class="collapse-body" style="display:none">
             <div class="image-input-row">
-              <input id="artVideoUrl" placeholder="视频嵌入URL（YouTube/B站iframe src）">
+              <input id="artVideoUrl" placeholder="嵌入URL">
               <input id="artVideoTitle" placeholder="视频标题" style="flex:0.5">
               <button class="sm ghost" onclick="addArticleVideo()">添加</button>
             </div>
             <div id="artVideosPreview"></div>
           </div>
         </div>
-
         <div class="form-actions">
           <button onclick="saveArticle()" id="saveArtBtn">发布文章</button>
           <button class="ghost" onclick="clearArticleForm()">清空</button>
           <button class="danger sm" onclick="cancelEditArticle()" id="cancelArtBtn" style="display:none">取消编辑</button>
         </div>
       </div>
+      <div class="tab-bar" id="articleTabBar"></div>
       <div class="data-table" id="articleList"></div>
     </div>
 
@@ -208,10 +215,17 @@ tr:hover{background:rgba(255,255,255,0.02)}
     <div class="page-section" id="page-sections">
       <h3>栏目管理</h3>
       <div class="form-grid">
-        <div><label>栏目标识</label><input id="secKey" placeholder="如 shizheng（英文）"></div>
-        <div><label>栏目名称</label><input id="secName" placeholder="如 时政深一度"></div>
+        <div><label>栏目标识</label><input id="secKey" placeholder="如 zhineng"></div>
+        <div><label>栏目名称</label><input id="secName" placeholder="如 智能革命"></div>
+        <div><label>父栏目（留空=顶级）</label>
+          <select id="secParent"><option value="">— 顶级栏目 —</option></select>
+        </div>
+        <div><label>排序序号</label><input id="secOrder" placeholder="数字，越小越靠前" type="number" value="1"></div>
       </div>
-      <div class="form-actions"><button onclick="saveSection()">添加/更新栏目</button></div>
+      <div class="form-actions">
+        <button onclick="saveSection()">添加/更新栏目</button>
+        <button class="ghost" onclick="document.getElementById('secKey').value='';document.getElementById('secName').value='';document.getElementById('secOrder').value='1'">清空</button>
+      </div>
       <div class="data-table" id="sectionList"></div>
     </div>
 
@@ -227,7 +241,7 @@ tr:hover{background:rgba(255,255,255,0.02)}
       </div>
       <div class="form-actions">
         <button onclick="addVideo()">添加视频</button>
-        <button class="ghost" onclick="clearVideoForm()">清空</button>
+        <button class="ghost" onclick="document.getElementById('videoTitle').value='';document.getElementById('videoDesc').value='';document.getElementById('videoUrl').value='';document.getElementById('videoIcon').value='🎬';document.getElementById('videoDate').value=''">清空</button>
       </div>
       <div class="data-table" id="videoList"></div>
     </div>
@@ -246,14 +260,14 @@ tr:hover{background:rgba(255,255,255,0.02)}
     <!-- 模板管理 -->
     <div class="page-section" id="page-templates">
       <h3>模板管理</h3>
-      <div style="font-size:13px;color:#5a7a90;margin-bottom:12px">选择模板可改变前台的视觉风格。点击CSS编辑可自定义颜色、字体等。</div>
+      <div style="font-size:13px;color:#5a7a90;margin-bottom:12px">选择模板改变前台视觉风格。</div>
       <div class="template-grid" id="templateGrid"></div>
       <div style="margin-top:10px;display:flex;gap:8px;max-width:400px">
         <input id="newTemplateName" placeholder="新模板名称" style="flex:1">
         <button class="sm" onclick="addTemplate()">新增</button>
       </div>
       <div id="templateCssEditor" style="display:none;margin-top:16px">
-        <h4 style="margin-bottom:8px">编辑模板CSS变量 <span id="editTemplateName" style="font-weight:normal;color:#5a7a90"></span></h4>
+        <h4 style="margin-bottom:8px">编辑CSS变量 <span id="editTemplateName" style="font-weight:normal;color:#5a7a90"></span></h4>
         <textarea class="css-editor" id="templateCssText" placeholder=":root { --primary: #00c8ff; ... }"></textarea>
         <div class="form-actions" style="margin-top:8px">
           <button class="sm" onclick="saveTemplateCss()">保存CSS</button>
@@ -278,11 +292,8 @@ tr:hover{background:rgba(255,255,255,0.02)}
 </div>
 
 <script>
-let data={articles:[],sections:{},videos:[],templates:[],admins:[]};
-let currentUser=null;
-let editingArticleId=null;
-let editingTemplateId=null;
-let commentFilter='all';
+let data={articles:[],sections:[],videos:[],templates:[],admins:[]};
+let currentUser=null,editingArticleId=null,editingTemplateId=null,commentFilter='all';
 
 async function api(url,body){
   try{
@@ -296,8 +307,7 @@ async function api(url,body){
 
 async function doLogin(){
   document.getElementById('loginError').style.display='none';
-  const u=document.getElementById('loginUser').value.trim();
-  const p=document.getElementById('loginPass').value.trim();
+  const u=document.getElementById('loginUser').value.trim(),p=document.getElementById('loginPass').value.trim();
   if(!u||!p){document.getElementById('loginError').textContent='请输入用户名和密码';document.getElementById('loginError').style.display='block';return}
   const r=await api('/api/login',{user:u,pass:p});
   if(!r.ok){document.getElementById('loginError').textContent=r.msg||'用户名或密码错误';document.getElementById('loginError').style.display='block';return}
@@ -306,71 +316,71 @@ async function doLogin(){
 
 async function doLogout(){
   await api('/api/logout',{});currentUser=null;
-  document.getElementById('loginPage').style.display='flex';
-  document.getElementById('adminLayout').style.display='none';
+  document.getElementById('loginPage').style.display='flex';document.getElementById('adminLayout').style.display='none';
 }
 
-async function refreshData(){
-  const r=await api('/api/data');if(r)data=r;
-}
+async function refreshData(){const r=await api('/api/data');if(r)data=r}
 
 function showAdmin(){
-  document.getElementById('loginPage').style.display='none';
-  document.getElementById('adminLayout').style.display='block';
+  document.getElementById('loginPage').style.display='none';document.getElementById('adminLayout').style.display='block';
   document.getElementById('currentUser').textContent=currentUser.user+' ('+getRoleLabel(currentUser.role)+')';
   document.getElementById('dashUser').textContent=currentUser.user;
   document.getElementById('dashRole').textContent=getRoleLabel(currentUser.role);
-  document.getElementById('statArticles').textContent=data.articles.length;
-  document.getElementById('statSections').textContent=Object.keys(data.sections||{}).length;
-  document.getElementById('statVideos').textContent=(data.videos||[]).length;
-  document.getElementById('statComments').textContent=data.articles.reduce((s,a)=>(a.comments||[]).filter(c=>!c.approved).length+s,0);
+  updateStats();
   document.getElementById('navAdmins').style.display=currentUser.role==='superadmin'?'':'none';
   loadAll();
 }
 
 function getRoleLabel(r){return r==='superadmin'?'超级管理员':r==='content'?'内容管理员':r==='template'?'模板管理员':'未知'}
-
 function switchPage(name,el){
   document.querySelectorAll('.page-section').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.nav a').forEach(a=>a.classList.remove('active'));
   if(el)el.classList.add('active');
 }
-
 function hasAccess(roles){
   if(!currentUser)return false;
   if(currentUser.role==='superadmin')return true;
   if(typeof roles==='string')return currentUser.role===roles;
   return roles.includes(currentUser.role);
 }
-
 function toggleCollapse(el){
   el.querySelector('.arrow').classList.toggle('open');
-  const body=el.nextElementSibling;
-  body.style.display=body.style.display==='none'?'block':'none';
+  el.nextElementSibling.style.display=el.nextElementSibling.style.display==='none'?'block':'none';
+}
+function insertTag(id,tag,attrs){
+  const ta=document.getElementById(id),s=ta.selectionStart,e=ta.selectionEnd;
+  const sel=ta.value.substring(s,e),bef=ta.value.substring(0,s),aft=ta.value.substring(e);
+  let o='<'+tag,c='</'+tag+'>';
+  if(tag==='br'||tag==='img')c='';
+  if(tag==='br'){o='<br>';c=''}
+  if(attrs)Object.entries(attrs).forEach(([k,v])=>{o+=' '+k+'="'+v+'"'});
+  o+='>';ta.value=bef+o+sel+c+aft;ta.focus();ta.selectionStart=ta.selectionEnd=s+o.length+sel.length;
 }
 
-function insertTag(id,tag,attrs){
-  const ta=document.getElementById(id);
-  const start=ta.selectionStart,end=ta.selectionEnd;
-  const sel=ta.value.substring(start,end);
-  const before=ta.value.substring(0,start),after=ta.value.substring(end);
-  let open='<'+tag,close='</'+tag+'>';
-  if(tag==='br'||tag==='img')close='';
-  if(tag==='br'){open='<br>';close=''}
-  if(attrs)Object.entries(attrs).forEach(([k,v])=>{open+=' '+k+'="'+v+'"'});
-  open+='>';
-  ta.value=before+open+sel+close+after;
-  ta.focus();ta.selectionStart=ta.selectionEnd=start+open.length+sel.length;
+// ===== SECTION HELPERS =====
+function getRootSections(){return(data.sections||[]).filter(s=>!s.parent)}
+function getChildren(key){return(data.sections||[]).filter(s=>s.parent===key)}
+function getSecName(key){const s=(data.sections||[]).find(x=>x.key===key);return s?s.name:key}
+function getAllDescendantKeys(key){
+  const kids=getChildren(key),result=[key];
+  kids.forEach(k=>result.push(...getAllDescendantKeys(k.key)));
+  return result;
+}
+function getDepth(key,d=0){
+  const s=(data.sections||[]).find(x=>x.key===key);
+  if(!s||!s.parent)return d;
+  return getDepth(s.parent,d+1);
+}
+function buildSectionOptions(prefix,parent=''){
+  return(data.sections||[]).filter(s=>s.parent===parent).sort((a,b)=>(a.order||0)-(b.order||0))
+    .map(s=>{const opts='<option value="'+s.key+'">'+prefix+s.name+'</option>'+buildSectionOptions(prefix+'── ',s.key);return opts}).join('');
 }
 
 // ===== ARTICLE MANAGEMENT =====
-function renderArticleSections(){
-  const keys=Object.keys(data.sections||{});
+function renderArticleSectionSelect(){
   const sel=document.getElementById('artSection');
-  const tabBar=document.getElementById('articleTabBar');
-  sel.innerHTML='<option value="">-- 选择栏目 --</option>'+keys.map(k=>'<option value="'+k+'">'+data.sections[k]+'</option>').join('');
-  tabBar.innerHTML='<button class="active" onclick="switchArticleTab(this,\'\')">全部</button>'+keys.map(k=>'<button onclick="switchArticleTab(this,\''+k+'\')">'+data.sections[k]+'</button>').join('');
+  sel.innerHTML='<option value="">-- 选择栏目 --</option>'+buildSectionOptions('','');
 }
 
 let articleFilter='';
@@ -380,69 +390,67 @@ function switchArticleTab(el,key){
   el.classList.add('active');articleFilter=key;renderArticleList();
 }
 
+function renderArticleTabs(){
+  const tabBar=document.getElementById('articleTabBar');
+  const roots=getRootSections().sort((a,b)=>(a.order||0)-(b.order||0));
+  tabBar.innerHTML='<button class="active" onclick="switchArticleTab(this,\'\')">全部</button>';
+  roots.forEach(r=>{tabBar.innerHTML+='<button onclick="switchArticleTab(this,\''+r.key+'\')">'+r.name+'</button>'});
+  const extras=(data.sections||[]).filter(s=>s.parent);
+  const shown=new Set(roots.map(r=>r.key));
+  extras.forEach(e=>{
+    if(!shown.has(e.parent)){
+      const p=getSecName(e.parent);
+      tabBar.innerHTML+='<button onclick="switchArticleTab(this,\''+e.key+'\')">'+(p?p+' › ':'')+e.name+'</button>';
+      shown.add(e.parent);
+    }
+  });
+}
+
 function renderArticleList(){
   const c=document.getElementById('articleList');
-  let articles=data.articles;
-  if(articleFilter)articles=articles.filter(a=>a.section===articleFilter);
-  if(!articles||!articles.length){c.innerHTML='<div class="empty-msg">暂无文章</div>';return}
-  const names=data.sections||{};
+  let arts=data.articles||[];
+  if(articleFilter){
+    const keys=getAllDescendantKeys(articleFilter);
+    arts=arts.filter(a=>keys.includes(a.section));
+  }
+  if(!arts.length){c.innerHTML='<div class="empty-msg">暂无文章</div>';return}
   let html='<table><tr><th>标题</th><th>栏目</th><th>图片</th><th>视频</th><th>留言</th><th>日期</th><th>操作</th></tr>';
-  articles.forEach(a=>{
-    const imgCount=(a.images||[]).length;
-    const videoCount=(a.videos||[]).length;
-    const commentCount=(a.comments||[]).length;
-    html+='<tr><td>'+a.title+'</td><td><span style="color:#5a7a90;font-size:12px">'+(names[a.section]||a.section)+'</span></td><td>'+(imgCount?'📷'+imgCount:'-')+'</td><td>'+(videoCount?'🎬'+videoCount:'-')+'</td><td>'+(commentCount?'💬'+commentCount:'-')+'</td><td style="font-size:12px;color:#5a7a90">'+(a.date||'-')+'</td><td><button class="sm ghost" onclick="editArticle(\''+a.id+'\')">编辑</button> <button class="sm danger" onclick="deleteArticle(\''+a.id+'\')">删除</button></td></tr>';
+  arts.forEach(a=>{
+    const secName=getSecName(a.section);
+    html+='<tr><td>'+a.title+'</td><td><span style="color:#5a7a90;font-size:12px">'+secName+'</span></td><td>'+(a.images&&a.images.length?'📷'+a.images.length:'-')+'</td><td>'+(a.videos&&a.videos.length?'🎬'+a.videos.length:'-')+'</td><td>'+(a.comments&&a.comments.length?'💬'+a.comments.length:'-')+'</td><td style="font-size:12px;color:#5a7a90">'+(a.date||'-')+'</td><td><button class="sm ghost" onclick="editArticle(\''+a.id+'\')">编辑</button> <button class="sm danger" onclick="deleteArticle(\''+a.id+'\')">删除</button></td></tr>';
   });
-  html+='</table>';
-  c.innerHTML=html;
+  html+='</table>';c.innerHTML=html;
 }
 
 function clearArticleForm(){
-  document.getElementById('artTitle').value='';
-  document.getElementById('artBody').value='';
-  document.getElementById('artSource').value='';
-  document.getElementById('artDate').value='';
+  ['artTitle','artBody','artSource','artDate'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('artFeatured').value='false';
-  document.getElementById('artImagesPreview').innerHTML='';
-  document.getElementById('artVideosPreview').innerHTML='';
-  document.getElementById('cancelArtBtn').style.display='none';
-  document.getElementById('saveArtBtn').textContent='发布文章';
-  editingArticleId=null;
+  document.getElementById('artImagesPreview').innerHTML='';document.getElementById('artVideosPreview').innerHTML='';
+  document.getElementById('cancelArtBtn').style.display='none';document.getElementById('saveArtBtn').textContent='发布文章';editingArticleId=null;
 }
 
 function editArticle(id){
   const a=data.articles.find(x=>x.id===id);if(!a)return;
   editingArticleId=id;
-  document.getElementById('artTitle').value=a.title;
-  document.getElementById('artBody').value=a.content;
-  document.getElementById('artSource').value=a.source||'';
-  document.getElementById('artDate').value=a.date||'';
+  document.getElementById('artTitle').value=a.title;document.getElementById('artBody').value=a.content;
+  document.getElementById('artSource').value=a.source||'';document.getElementById('artDate').value=a.date||'';
   document.getElementById('artFeatured').value=a.featured?'true':'false';
   document.getElementById('artSection').value=a.section;
-  renderImagesPreview(a.images||[]);
-  renderVideosPreview(a.videos||[]);
-  document.getElementById('cancelArtBtn').style.display='';
-  document.getElementById('saveArtBtn').textContent='更新文章';
+  renderImagesPreview(a.images||[]);renderVideosPreview(a.videos||[]);
+  document.getElementById('cancelArtBtn').style.display='';document.getElementById('saveArtBtn').textContent='更新文章';
   document.getElementById('articleEditor').scrollIntoView({behavior:'smooth'});
 }
 
-function cancelEditArticle(){clearArticleForm();}
+function cancelEditArticle(){clearArticleForm()}
 
 function getArticleFormData(){
   const section=document.getElementById('artSection').value;
   if(!section){alert('请选择栏目');return null}
   const title=document.getElementById('artTitle').value.trim();
   if(!title){alert('请输入标题');return null}
-  const images=[...document.querySelectorAll('#artImagesPreview img')].map(img=>img.src);
+  const images=[...document.querySelectorAll('#artImagesPreview .image-thumb-wrap img')].map(img=>img.src);
   const videos=[...document.querySelectorAll('#artVideosPreview .video-tag')].map(el=>JSON.parse(el.dataset.video));
-  return {
-    section,title,
-    content:document.getElementById('artBody').value.trim()||'暂无内容',
-    source:document.getElementById('artSource').value.trim(),
-    date:document.getElementById('artDate').value.trim(),
-    featured:document.getElementById('artFeatured').value==='true',
-    images,videos
-  };
+  return {section,title,content:document.getElementById('artBody').value.trim()||'暂无内容',source:document.getElementById('artSource').value.trim(),date:document.getElementById('artDate').value.trim(),featured:document.getElementById('artFeatured').value==='true',images,videos};
 }
 
 async function saveArticle(){
@@ -451,22 +459,18 @@ async function saveArticle(){
   if(editingArticleId){
     const idx=data.articles.findIndex(a=>a.id===editingArticleId);
     if(idx>=0){Object.assign(data.articles[idx],fd);data.articles[idx].comments=data.articles[idx].comments||[]}
-  }else{
-    fd.id='a'+Date.now();fd.comments=[];
-    data.articles.push(fd);
-  }
+  }else{fd.id='a'+Date.now();fd.comments=[];data.articles.push(fd)}
   await api('/api/data',{articles:data.articles});
   clearArticleForm();renderArticleList();updateStats();
   alert('文章已'+(editingArticleId?'更新':'发布'));
 }
 
 async function deleteArticle(id){
-  if(!confirm('确认删除此文章？'))return;
+  if(!confirm('确认删除？'))return;
   data.articles=data.articles.filter(a=>a.id!==id);
   await api('/api/data',{articles:data.articles});renderArticleList();updateStats();
 }
 
-// image management
 function addImageUrl(){
   const url=document.getElementById('artImageUrl').value.trim();
   if(!url){alert('请输入图片URL');return}
@@ -474,92 +478,101 @@ function addImageUrl(){
   renderImagesPreview([...getCurrentImages(),url]);
 }
 
-function getCurrentImages(){
-  return [...document.querySelectorAll('#artImagesPreview img')].map(img=>img.src);
-}
+function getCurrentImages(){return[...document.querySelectorAll('#artImagesPreview .image-thumb-wrap img')].map(img=>img.src)}
 
-function renderImagesPreview(images){
+function renderImagesPreview(imgs){
   const c=document.getElementById('artImagesPreview');
-  c.innerHTML=images.map((url,i)=>'<span class="image-thumb-wrap"><img src="'+url+'" onerror="this.style.display=\'none\'"><button class="img-del" onclick="removeImage('+i+')">×</button></span>').join('');
+  c.innerHTML=imgs.map((url,i)=>'<span class="image-thumb-wrap"><img src="'+url+'" onerror="this.style.display=\'none\'"><button class="img-del" onclick="removeImage('+i+')">×</button></span>').join('');
 }
 
-function removeImage(idx){
-  const imgs=getCurrentImages();imgs.splice(idx,1);renderImagesPreview(imgs);
-}
+function removeImage(i){const imgs=getCurrentImages();imgs.splice(i,1);renderImagesPreview(imgs)}
 
-async function triggerUpload(type){
-  document.getElementById('uploadImageInput').click();
-}
-
-async function handleUpload(input,target){
+async function handleUpload(input){
   const file=input.files[0];if(!file)return;
-  const form=new FormData();form.append('file',file);
+  const fd=new FormData();fd.append('file',file);
   try{
-    const r=await fetch('/api/upload',{method:'POST',body:form});
-    const d=await r.json();
-    if(d.ok){
-      if(target==='images'){
-        renderImagesPreview([...getCurrentImages(),d.url]);
-      }
-    }else{alert(d.msg||'上传失败')}
+    const r=await(await fetch('/api/upload',{method:'POST',body:fd})).json();
+    if(r.ok)renderImagesPreview([...getCurrentImages(),r.url]);
+    else alert(r.msg||'上传失败');
   }catch(e){alert('上传失败')}
   input.value='';
 }
 
-// article videos
 function addArticleVideo(){
   const url=document.getElementById('artVideoUrl').value.trim();
   const title=document.getElementById('artVideoTitle').value.trim()||'视频';
   if(!url){alert('请输入视频URL');return}
   document.getElementById('artVideoUrl').value='';document.getElementById('artVideoTitle').value='';
-  const videos=[...getArticleVideos(),{title,url}];
-  renderVideosPreview(videos);
+  renderVideosPreview([...getArticleVideos(),{title,url}]);
 }
 
-function getArticleVideos(){
-  return [...document.querySelectorAll('#artVideosPreview .video-tag')].map(el=>JSON.parse(el.dataset.video));
-}
+function getArticleVideos(){return[...document.querySelectorAll('#artVideosPreview .video-tag')].map(el=>JSON.parse(el.dataset.video))}
 
 function renderVideosPreview(videos){
   const c=document.getElementById('artVideosPreview');
   c.innerHTML=videos.map((v,i)=>'<span class="video-tag" data-video=\''+JSON.stringify(v)+'\' style="display:inline-flex;align-items:center;gap:6px;background:rgba(0,200,255,0.06);border-radius:4px;padding:4px 10px;margin:2px;font-size:12px">🎬 '+v.title+' <span style="color:#ff4757;cursor:pointer" onclick="removeArticleVideo('+i+')">×</span></span>').join('');
 }
 
-function removeArticleVideo(idx){
-  const v=getArticleVideos();v.splice(idx,1);renderVideosPreview(v);
-}
+function removeArticleVideo(i){const v=getArticleVideos();v.splice(i,1);renderVideosPreview(v)}
 
 // ===== SECTIONS =====
 function renderSections(){
   const c=document.getElementById('sectionList');
-  const sec=data.sections||{};
-  const keys=Object.keys(sec);
-  if(!keys.length){c.innerHTML='<div class="empty-msg">暂无栏目</div>';return}
-  let html='<table><tr><th>标识</th><th>栏目名称</th><th>文章数</th><th>操作</th></tr>';
-  keys.forEach(k=>{
-    const count=data.articles.filter(a=>a.section===k).length;
-    html+='<tr><td style="color:#5a7a90;font-size:12px">'+k+'</td><td>'+sec[k]+'</td><td>'+count+'</td><td><button class="sm danger" onclick="deleteSection(\''+k+'\')">删除</button></td></tr>';
-  });
-  html+='</table>';
-  c.innerHTML=html;
+  const secs=data.sections||[];
+  if(!secs.length){c.innerHTML='<div class="empty-msg">暂无栏目</div>';return}
+  const parentOpts=document.getElementById('secParent');
+  parentOpts.innerHTML='<option value="">— 顶级栏目 —</option>'+buildSectionOptions('','');
+  const roots=getRootSections().sort((a,b)=>(a.order||0)-(b.order||0));
+  let html='<table><tr><th>栏目</th><th>层级</th><th>包含文章</th><th>操作</th></tr>';
+  function renderTree(keys, depth){
+    keys.forEach(k=>{
+      const kids=getChildren(k.key).sort((a,b)=>(a.order||0)-(b.order||0));
+      const artCount=data.articles.filter(a=>{
+        const descKeys=getAllDescendantKeys(k.key);
+        return descKeys.includes(a.section);
+      }).length;
+      html+='<tr><td style="padding-left:'+(16+depth*20)+'px">'+(depth>0?'└ ':'')+k.name+' <span class="badge" style="font-size:10px;background:rgba(255,255,255,0.04);color:#5a7a90">'+k.key+'</span></td><td>L'+(depth+1)+'</td><td>'+artCount+' 篇</td><td><button class="sm ghost" onclick="editSection(\''+k.key+'\')">编辑</button> <button class="sm danger" onclick="deleteSection(\''+k.key+'\')">删除</button></td></tr>';
+      if(kids.length)renderTree(kids,depth+1);
+    });
+  }
+  renderTree(roots,0);
+  html+='</table>';c.innerHTML=html;
+}
+
+function editSection(key){
+  const s=(data.sections||[]).find(x=>x.key===key);
+  if(!s)return;
+  document.getElementById('secKey').value=s.key;document.getElementById('secName').value=s.name;
+  document.getElementById('secParent').value=s.parent||'';
+  document.getElementById('secOrder').value=s.order||1;
 }
 
 async function saveSection(){
   if(!hasAccess(['superadmin','content'])){alert('权限不足');return}
-  const k=document.getElementById('secKey').value.trim();
-  const n=document.getElementById('secName').value.trim();
-  if(!k||!n){alert('请输入栏目标识和名称');return}
-  const sec=data.sections||{};sec[k]=n;
-  await api('/api/data',{sections:sec});data.sections=sec;
-  document.getElementById('secKey').value='';document.getElementById('secName').value='';
-  renderSections();renderArticleSections();updateStats();
+  const key=document.getElementById('secKey').value.trim();
+  const name=document.getElementById('secName').value.trim();
+  const parent=document.getElementById('secParent').value;
+  const order=parseInt(document.getElementById('secOrder').value)||1;
+  if(!key||!name){alert('请输入栏目标识和名称');return}
+  if(!/^[a-z0-9]+$/.test(key)){alert('栏目标识只能使用小写字母和数字');return}
+  let secs=data.sections||[];
+  const existing=secs.findIndex(s=>s.key===key);
+  const newSec={key,name,parent:parent||'',order};
+  if(existing>=0){secs[existing]=newSec}else{secs.push(newSec)}
+  await api('/api/data',{sections:secs});data.sections=secs;
+  document.getElementById('secKey').value='';document.getElementById('secName').value='';document.getElementById('secOrder').value='1';
+  renderSections();renderArticleSectionSelect();renderArticleTabs();updateStats();
 }
 
 async function deleteSection(key){
-  if(!confirm('删除栏目「'+key+'」？文章不会自动删除'))return;
-  const sec=data.sections||{};delete sec[key];
-  await api('/api/data',{sections:sec});data.sections=sec;
-  renderSections();renderArticleSections();updateStats();
+  if(!confirm('确认删除栏目「'+key+'」？'))return;
+  let secs=data.sections||[];
+  const kids=getChildren(key);
+  if(kids.length&&!confirm('该栏目下有 '+kids.length+' 个子栏目，将一并删除？'))return;
+  function removeWithChildren(k){secs=secs.filter(s=>s.key!==k);getChildren(k).forEach(c=>removeWithChildren(c.key))}
+  removeWithChildren(key);
+  await api('/api/data',{sections:secs});data.sections=secs;
+  renderSections();renderArticleSectionSelect();renderArticleTabs();updateStats();
 }
 
 // ===== VIDEOS =====
@@ -576,10 +589,10 @@ async function addVideo(){
   const t=document.getElementById('videoTitle').value.trim();if(!t){alert('请输入标题');return}
   if(!data.videos)data.videos=[];
   data.videos.push({id:'v'+Date.now(),title:t,desc:document.getElementById('videoDesc').value.trim(),url:document.getElementById('videoUrl').value.trim(),thumb:document.getElementById('videoIcon').value.trim()||'🎬',date:document.getElementById('videoDate').value.trim()});
-  await api('/api/data',{videos:data.videos});clearVideoForm();renderVideos();updateStats();
+  await api('/api/data',{videos:data.videos});
+  document.getElementById('videoTitle').value='';document.getElementById('videoDesc').value='';document.getElementById('videoUrl').value='';document.getElementById('videoIcon').value='🎬';document.getElementById('videoDate').value='';
+  renderVideos();updateStats();
 }
-
-function clearVideoForm(){['videoTitle','videoDesc','videoUrl','videoDate'].forEach(id=>document.getElementById(id).value='');document.getElementById('videoIcon').value='🎬'}
 
 async function deleteVideo(i){if(!confirm('确认删除？'))return;data.videos.splice(i,1);await api('/api/data',{videos:data.videos});renderVideos();updateStats()}
 
@@ -587,9 +600,7 @@ async function deleteVideo(i){if(!confirm('确认删除？'))return;data.videos.
 function renderComments(){
   const c=document.getElementById('commentList');
   let all=[];
-  data.articles.forEach(a=>{
-    (a.comments||[]).forEach(cmt=>{all.push({...cmt,articleTitle:a.title,articleId:a.id})});
-  });
+  (data.articles||[]).forEach(a=>{(a.comments||[]).forEach(cmt=>{all.push({...cmt,articleTitle:a.title,articleId:a.id})})});
   if(commentFilter==='pending')all=all.filter(c=>!c.approved);
   if(commentFilter==='approved')all=all.filter(c=>c.approved);
   if(!all.length){c.innerHTML='<div class="empty-msg">暂无留言</div>';return}
@@ -607,36 +618,23 @@ function switchCommentTab(el,filter){
   el.classList.add('active');commentFilter=filter;renderComments();
 }
 
-async function approveComment(id,approved){
-  await api('/api/comments/approve',{id,approved});
-  await refreshData();renderComments();updateStats();
-}
-
-async function deleteComment(id){
-  if(!confirm('确认删除此留言？'))return;
-  await api('/api/comments/delete',{id});
-  await refreshData();renderComments();updateStats();
-}
+async function approveComment(id,approved){await api('/api/comments/approve',{id,approved});await refreshData();renderComments();updateStats()}
+async function deleteComment(id){if(!confirm('确认删除？'))return;await api('/api/comments/delete',{id});await refreshData();renderComments();updateStats()}
 
 // ===== TEMPLATES =====
 function renderTemplates(){
-  const grid=document.getElementById('templateGrid');
-  grid.innerHTML='';
+  const grid=document.getElementById('templateGrid');grid.innerHTML='';
   (data.templates||[]).forEach(t=>{
     const card=document.createElement('div');
     card.className='template-card'+(t.active?' active':'');
-    card.style.position='relative';
+    card.innerHTML='<div class="icon">'+(t.icon||'📄')+'</div><div class="name">'+t.name+'</div><div class="preview">'+(t.active?'✓ 当前使用':'点击切换')+'</div>';
     if(hasAccess(['superadmin','template'])){
-      card.innerHTML='<div class="icon">'+(t.icon||'📄')+'</div><div class="name">'+t.name+'</div><div class="preview">'+(t.active?'✓ 当前使用':'点击切换')+'</div><button class="del" onclick="event.stopPropagation();deleteTemplate(\''+t.id+'\')">×</button>';
+      card.innerHTML+='<button class="del" onclick="event.stopPropagation();deleteTemplate(\''+t.id+'\')">×</button>';
       card.onclick=()=>selectTemplate(t.id);
-    }else{
-      card.innerHTML='<div class="icon">'+(t.icon||'📄')+'</div><div class="name">'+t.name+'</div><div class="preview">'+(t.active?'✓ 当前使用':'')+'</div>';
+      const editBtn=document.createElement('button');
+      editBtn.className='sm ghost';editBtn.textContent='编辑CSS';editBtn.style.cssText='margin-top:4px;font-size:11px';
+      editBtn.onclick=e=>{e.stopPropagation();openCssEditor(t.id)};card.appendChild(editBtn);
     }
-    const editBtn=document.createElement('button');
-    editBtn.className='sm ghost';editBtn.textContent='编辑CSS';
-    editBtn.style.cssText='margin-top:6px;font-size:11px';
-    editBtn.onclick=(e)=>{e.stopPropagation();openCssEditor(t.id)};
-    if(hasAccess(['superadmin','template']))card.appendChild(editBtn);
     grid.appendChild(card);
   });
 }
@@ -644,8 +642,7 @@ function renderTemplates(){
 async function selectTemplate(id){
   if(!hasAccess(['superadmin','template'])){alert('权限不足');return}
   (data.templates||[]).forEach(t=>t.active=(t.id===id));
-  await api('/api/data',{templates:data.templates});
-  renderTemplates();
+  await api('/api/data',{templates:data.templates});renderTemplates();
 }
 
 async function addTemplate(){
@@ -654,33 +651,27 @@ async function addTemplate(){
   if(!name){alert('请输入模板名称');return}
   if(!data.templates)data.templates=[];
   data.templates.push({id:'tm'+Date.now(),name,icon:'📄',active:false,css:''});
-  await api('/api/data',{templates:data.templates});
-  document.getElementById('newTemplateName').value='';renderTemplates();
+  await api('/api/data',{templates:data.templates});document.getElementById('newTemplateName').value='';renderTemplates();
 }
 
 async function deleteTemplate(id){
-  if(!hasAccess(['superadmin','template'])){alert('权限不足');return}
-  if(!confirm('确认删除模板？'))return;
+  if(!hasAccess(['superadmin','template'])||!confirm('确认删除？'))return;
   data.templates=data.templates.filter(t=>t.id!==id);
   await api('/api/data',{templates:data.templates});renderTemplates();
 }
 
 function openCssEditor(id){
   editingTemplateId=id;
-  const t=data.templates.find(x=>x.id===id);
-  if(!t)return;
-  document.getElementById('templateCssEditor').style.display='block';
-  document.getElementById('templateCssText').value=t.css||'';
+  const t=data.templates.find(x=>x.id===id);if(!t)return;
+  document.getElementById('templateCssEditor').style.display='block';document.getElementById('templateCssText').value=t.css||'';
   document.getElementById('editTemplateName').textContent='— '+t.name;
 }
 
 async function saveTemplateCss(){
   if(!editingTemplateId)return;
-  const t=data.templates.find(x=>x.id===editingTemplateId);
-  if(!t)return;
+  const t=data.templates.find(x=>x.id===editingTemplateId);if(!t)return;
   t.css=document.getElementById('templateCssText').value;
-  await api('/api/data',{templates:data.templates});
-  alert('CSS已保存');document.getElementById('templateCssEditor').style.display='none';
+  await api('/api/data',{templates:data.templates});alert('CSS已保存');document.getElementById('templateCssEditor').style.display='none';
 }
 
 // ===== ADMINS =====
@@ -698,39 +689,35 @@ async function addAdmin(){
   if(data.admins.find(a=>a.user===u)){alert('用户名已存在');return}
   data.admins.push({id:'a'+Date.now(),user:u,pass:p,role:document.getElementById('adminRole').value,name:u});
   await api('/api/data',{admins:data.admins});
-  document.getElementById('adminUser').value='';document.getElementById('adminPass').value='';
-  renderAdmins();
+  document.getElementById('adminUser').value='';document.getElementById('adminPass').value='';renderAdmins();
 }
 
 async function deleteAdmin(id){
-  if(!hasAccess('superadmin'))return;
-  if(data.admins.length<=1){alert('至少保留一个管理员');return}
-  if(!confirm('确认删除？'))return;
-  data.admins=data.admins.filter(a=>a.id!==id);
-  await api('/api/data',{admins:data.admins});renderAdmins();
+  if(!hasAccess('superadmin')||data.admins.length<=1||!confirm('确认删除？'))return;
+  data.admins=data.admins.filter(a=>a.id!==id);await api('/api/data',{admins:data.admins});renderAdmins();
 }
 
 function updateStats(){
-  document.getElementById('statArticles').textContent=data.articles.length;
-  document.getElementById('statSections').textContent=Object.keys(data.sections||{}).length;
+  const roots=getRootSections().length;
+  const total=(data.sections||[]).length;
+  document.getElementById('statArticles').textContent=(data.articles||[]).length;
+  document.getElementById('statSections').textContent=roots;
   document.getElementById('statVideos').textContent=(data.videos||[]).length;
-  document.getElementById('statComments').textContent=data.articles.reduce((s,a)=>(a.comments||[]).filter(c=>!c.approved).length+s,0);
+  document.getElementById('statComments').textContent=(data.articles||[]).reduce((s,a)=>(a.comments||[]).filter(c=>!c.approved).length+s,0);
+  document.getElementById('statTotalSections').textContent=total;
+  document.getElementById('statRootSections').textContent=roots;
+  document.getElementById('statChildSections').textContent=total-roots;
 }
 
 function loadAll(){
-  renderArticleSections();renderArticleList();renderSections();renderVideos();renderComments();renderTemplates();renderAdmins();
-  document.getElementById('artSection').value='';
+  renderArticleSectionSelect();renderArticleTabs();renderArticleList();renderSections();renderVideos();renderComments();renderTemplates();renderAdmins();
   updateStats();
 }
 
-// Auto-login
 (async function(){
   try{
     const s=await api('/api/session');
-    if(s&&s.user){
-      const chk=await api('/api/session/check');
-      if(chk&&chk.ok){currentUser=chk;await refreshData();showAdmin()}
-    }
+    if(s&&s.user){const chk=await api('/api/session/check');if(chk&&chk.ok){currentUser=chk;await refreshData();showAdmin()}}
   }catch(e){}
 })();
 </script>
