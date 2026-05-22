@@ -10,6 +10,7 @@
       "http://localhost:5099/uploads/d9184987-4cb.png"
     ],
     "section": "xinai",
+    "showImages": true,
     "source": "韩联社",
     "title": "先遣组抵平壤释放强烈信号：中国借半岛变局构筑欧亚新支点",
     "videos": [
@@ -17,8 +18,7 @@
         "title": "202605220001",
         "url": "http://localhost:5099/uploads/7dbafc24-4fa.mp4"
       }
-    ],
-    "showImages": true
+    ]
   },
   {
     "comments": [],
