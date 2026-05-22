@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cii.中国 — 喜爱中国</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:#0a0a12;color:#e0e0e0}
+.slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 80px;opacity:0;transition:opacity 0.8s ease;pointer-events:none}
+.slide.active{opacity:1;pointer-events:auto}
+.bg-grid{position:absolute;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(0,200,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.slide>*{position:relative;z-index:1}
+h1{font-size:68px;font-weight:700;letter-spacing:8px;background:linear-gradient(135deg,#00c8ff,#7b61ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;margin-bottom:10px}
+.subtitle-en{font-size:18px;color:#7b9bb8;letter-spacing:4px;text-transform:uppercase;margin-bottom:30px}
+.subtitle-cn{font-size:22px;color:#a0c4e8;letter-spacing:2px;margin-bottom:8px}
+.section-title{font-size:52px;font-weight:700;letter-spacing:6px;background:linear-gradient(135deg,#00c8ff,#7b61ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.section-en{font-size:16px;color:#7b9bb8;letter-spacing:3px;margin-bottom:30px}
+.grid{display:grid;gap:16px;width:100%;max-width:1100px}
+.grid-2{grid-template-columns:1fr 1fr}
+.grid-3{grid-template-columns:1fr 1fr 1fr}
+.grid-4{grid-template-columns:1fr 1fr 1fr 1fr}
+.card{background:rgba(255,255,255,0.04);border:1px solid rgba(0,200,255,0.12);border-radius:12px;padding:20px 24px;backdrop-filter:blur(4px);transition:border-color 0.3s}
+.card:hover{border-color:rgba(0,200,255,0.4)}
+.card-title{font-size:20px;font-weight:600;color:#00c8ff;margin-bottom:8px}
+.card-title-en{font-size:12px;color:#5a7a90;margin-bottom:10px}
+.card-item{font-size:14px;color:#c0d0e0;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.card-item:last-child{border-bottom:none}
+.card-item::before{content:"▸ ";color:#7b61ff}
+.date-display{position:absolute;top:30px;right:40px;font-size:14px;color:#5a7a90;letter-spacing:1px;z-index:2}
+.logo-corner{position:absolute;top:30px;left:40px;font-size:14px;color:#5a7a90;letter-spacing:2px;z-index:2;display:flex;align-items:center;gap:8px}
+.logo-corner .dot{width:6px;height:6px;border-radius:50%;background:#00c8ff;display:inline-block;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+.controls{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:20px;z-index:100}
+.controls button{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#c0d0e0;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:18px;transition:all 0.3s;display:flex;align-items:center;justify-content:center}
+.controls button:hover{background:rgba(0,200,255,0.15);border-color:#00c8ff;color:#00c8ff}
+.controls .tts-btn{width:auto;border-radius:22px;padding:0 24px;gap:8px;font-size:14px}
+.controls .tts-btn.speaking{background:rgba(0,200,255,0.2);border-color:#00c8ff;color:#00c8ff;animation:glow 1s infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 8px rgba(0,200,255,0.2)}50%{box-shadow:0 0 20px rgba(0,200,255,0.5)}}
+.dots{display:flex;gap:8px}
+.dots span{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);cursor:pointer;transition:all 0.3s}
+.dots span.active{background:#00c8ff;width:24px;border-radius:4px}
+.auto-label{font-size:12px;color:#5a7a90}
+.page-num{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);font-size:14px;color:#5a7a90;letter-spacing:2px;z-index:100}
+
+.cover-sub{font-size:32px;color:#8aaec8;letter-spacing:4px;margin-bottom:40px}
+.cover-tagline{font-size:16px;color:#5a7a90;letter-spacing:6px;border-top:1px solid rgba(255,255,255,0.1);padding-top:20px;margin-top:20px}
+
+.news-list{width:100%;max-width:1100px}
+.news-item{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.news-item .date{font-size:12px;color:#5a7a90;min-width:80px}
+.news-item .tag{font-size:11px;padding:2px 10px;border-radius:10px;background:rgba(0,200,255,0.1);color:#00c8ff;margin:0 12px;white-space:nowrap}
+.news-item .title{font-size:15px;color:#e0e8f0;flex:1}
+
+.footer-text{font-size:13px;color:#5a7a90;text-align:center;line-height:2;margin-top:20px}
+.footer-text strong{color:#8aaec8}
+
+@media(max-width:768px){
+.slide{padding:30px 20px}
+h1{font-size:36px;letter-spacing:4px}
+.section-title{font-size:28px;letter-spacing:3px}
+.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+.card{padding:14px 16px}
+.date-display{top:15px;right:15px;font-size:11px}
+.logo-corner{top:15px;left:15px;font-size:11px}
+.controls{flex-wrap:wrap;gap:10px;padding:0 10px;bottom:20px}
+.cover-sub{font-size:20px}
+.news-item{flex-wrap:wrap}
+.news-item .date{min-width:auto;margin-right:8px}
+}
+</style>
+</head>
+<body>
+
+<div class="logo-corner"><span class="dot"></span> Cii.中国</div>
+<div class="date-display" id="dateDisplay"></div>
+
+<!-- SLIDE 1: COVER -->
+<div class="slide active" data-slide="0">
+  <div class="bg-grid"></div>
+  <h1>Cii.中国</h1>
+  <div class="cover-sub">喜爱中国 · I Love China</div>
+  <div class="cover-tagline">地外文明蓝星体系新坐标</div>
+</div>
+
+<!-- SLIDE 2: 时政深一度 -->
+<div class="slide" data-slide="1">
+  <div class="bg-grid"></div>
+  <div class="section-title">时政深一度</div>
+  <div class="section-en">Political Depth</div>
+  <div class="grid grid-4" style="max-width:900px">
+    <div class="card">
+      <div class="card-title">时政深一度</div>
+      <div class="card-title-en">In-Depth Politics</div>
+      <div class="card-item">习近平强调以更大力度加强基础研究 提升原始创新能力</div>
+      <div class="card-item">习近平强调"义乌发展经验"：因地制宜探索高质量发展之路</div>
+    </div>
+    <div class="card">
+      <div class="card-title">烽火铁甲</div>
+      <div class="card-title-en">Iron Armor</div>
+      <div class="card-item">中国海军宣传片引猜想：第四艘航母是否已"出鞘"？</div>
+    </div>
+    <div class="card">
+      <div class="card-title">经纬脉搏</div>
+      <div class="card-title-en">Economic Pulse</div>
+      <div class="card-item">产业转移与内陆崛起：中国经济地理重塑</div>
+    </div>
+    <div class="card">
+      <div class="card-title">社稷春秋</div>
+      <div class="card-title-en">Society Chronicle</div>
+      <div class="card-item">宝山区委第十三轮巡察进驻5家单位</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: 后稀缺时代 -->
+<div class="slide" data-slide="2">
+  <div class="bg-grid"></div>
+  <div class="section-title">后稀缺时代</div>
+  <div class="section-en">Post-Scarcity Era</div>
+  <div class="grid grid-2" style="max-width:1000px">
+    <div class="card">
+      <div class="card-title">科技双刃</div>
+      <div class="card-title-en">Technology Double-Edged</div>
+      <div class="card-item">智能革命 — AI重塑生产力格局</div>
+      <div class="card-item">基因边界 — 基因编辑伦理与法规探索</div>
+      <div class="card-item">虚实重构 — 元宇宙与数字孪生</div>
+      <div class="card-item">能源革命 — 核聚变与清洁能源突破</div>
+      <div class="card-item">地缘裂变 — 科技地缘博弈</div>
+      <div class="card-item">地球工程 — 中国可重复使用航天器第六次发射成功</div>
+    </div>
+    <div class="card">
+      <div class="card-title">裂变重溯</div>
+      <div class="card-title-en">Fission Retrospection</div>
+      <div class="card-item">供应链战 — 全球供应链重构与中国产业转移</div>
+      <div class="card-item">多边新生 — 多边主义新格局</div>
+      <div class="card-item">自媒体悖论 — 信息传播的机遇与挑战</div>
+      <div class="card-item">认知升维 — 认知战与信息素养</div>
+      <div class="card-item">虚实文明 — 数字文明新形态</div>
+      <div class="card-item">奇点信仰 — 技术奇点的哲学思考</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: 蓝星体系 -->
+<div class="slide" data-slide="3">
+  <div class="bg-grid"></div>
+  <div class="section-title">蓝星体系</div>
+  <div class="section-en">Blue Earth System</div>
+  <div class="grid grid-2" style="max-width:1000px">
+    <div class="card">
+      <div class="card-title">资源配置</div>
+      <div class="card-title-en">Resource Allocation</div>
+      <div class="card-item">基因溯源 — 生命起源与基因资源</div>
+      <div class="card-item">资源角力 — 元首外交春潮涌：多国领导人密集访华</div>
+      <div class="card-item">生态武器 — 生态安全与战略资源</div>
+      <div class="card-item">阵营博弈 — 国际阵营分化与合作</div>
+      <div class="card-item">代理人战 — 地缘代理人博弈</div>
+      <div class="card-item">文明公约 — 中巴建交75周年：巴基斯坦总统最高礼仪致敬中国开国领袖</div>
+    </div>
+    <div class="card">
+      <div class="card-title">冲突重构</div>
+      <div class="card-title-en">Conflict Restructuring</div>
+      <div class="card-item">异能觉醒 — 新质生产力崛起</div>
+      <div class="card-item">红岸突围 — 中国科技自主创新之路</div>
+      <div class="card-item">升维实验 — 日本防卫报告重构对华认知</div>
+      <div class="card-item">星际建构 — 太空治理新秩序</div>
+      <div class="card-item">禁区法则 — 国际法与国际规则博弈</div>
+      <div class="card-item">平等转型 — 全球治理体系改革</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: 地外文明 -->
+<div class="slide" data-slide="4">
+  <div class="bg-grid"></div>
+  <div class="section-title">地外文明</div>
+  <div class="section-en">Extraterrestrial Civilization</div>
+  <div class="grid grid-2" style="max-width:1000px">
+    <div class="card">
+      <div class="card-title">科学探索</div>
+      <div class="card-title-en">Scientific Exploration</div>
+      <div class="card-item">深空探秘 — 中国深空探测计划</div>
+      <div class="card-item">行星考古 — 中国天问三号完成火星采样关键突破</div>
+      <div class="card-item">观测矩阵 — 中国科学家发布天文AI模型"星衍"：发现160余个宇宙早期星系</div>
+      <div class="card-item">异星生态 — 2026奥巴马掀桌：外星人真实存在？</div>
+      <div class="card-item">极端适应 — 极端环境生命适应机制</div>
+      <div class="card-item">生物标踪 — 宇宙生命信号追踪</div>
+    </div>
+    <div class="card">
+      <div class="card-title">文明博弈</div>
+      <div class="card-title-en">Civilization Game</div>
+      <div class="card-item">接触准则 — 地外文明接触伦理框架</div>
+      <div class="card-item">冲突预案 — 跨越政治分歧：美俄宇航员共赴太空站</div>
+      <div class="card-item">信仰重构 — 中国将成为全球精神复兴摇篮</div>
+      <div class="card-item">联合探秘 — 国际太空合作新篇章</div>
+      <div class="card-item">公民科探 — 公众科学参与太空探索</div>
+      <div class="card-item">科传平衡 — 科学传播与认知平衡</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: 新闻头条 -->
+<div class="slide" data-slide="5">
+  <div class="bg-grid"></div>
+  <div class="section-title">新闻头条</div>
+  <div class="section-en">Headline News</div>
+  <div class="news-list" style="max-width:900px">
+    <div class="news-item"><span class="date">2026-04-30</span><span class="tag">时政深一度</span><span class="title">习近平强调以更大力度加强基础研究 提升原始创新能力</span></div>
+    <div class="news-item"><span class="date">2026-04-28</span><span class="tag">文明公约</span><span class="title">中巴建交75周年：巴基斯坦总统以最高礼仪致敬中国开国领袖</span></div>
+    <div class="news-item"><span class="date">2026-04-22</span><span class="tag">资源角力</span><span class="title">元首外交春潮涌：多国领导人密集访华释放合作强信号</span></div>
+    <div class="news-item"><span class="date">2026-04-19</span><span class="tag">冲突重构</span><span class="title">日本防卫报告重构对华认知 以中俄朝系统替代单一国家视角</span></div>
+    <div class="news-item"><span class="date">2026-04-02</span><span class="tag">裂变重溯</span><span class="title">卫报称中国产业转移是第三线回归 官方回应：差异巨大</span></div>
+    <div class="news-item"><span class="date">2026-03-27</span><span class="tag">自媒体悖论</span><span class="title">美英多份权威文件未见涉华"影响力操作"表述 2月报告实为自媒体杜撰</span></div>
+    <div class="news-item"><span class="date">2026-03-19</span><span class="tag">信仰重构</span><span class="title">中国将成为全球精神复兴摇篮</span></div>
+    <div class="news-item"><span class="date">2026-02-21</span><span class="tag">观测矩阵</span><span class="title">中国科学家发布天文AI模型"星衍"：探测深度跃升1星等</span></div>
+  </div>
+</div>
+
+<!-- SLIDE 7: 破茧者说 -->
+<div class="slide" data-slide="6">
+  <div class="bg-grid"></div>
+  <div class="section-title">破茧者说</div>
+  <div class="section-en">Breaking the Cocoon Speaks</div>
+  <div class="grid grid-2" style="max-width:800px">
+    <div class="card">
+      <div class="card-title">伤痕铸就星辰的归国之路</div>
+      <div class="card-title-en">The Star's Return — Qian Xuesen</div>
+      <div class="card-item">钱学森：中国航天之父的归国之路，伤痕铸就星辰</div>
+    </div>
+    <div class="card">
+      <div class="card-title">馒头与星辰</div>
+      <div class="card-title-en">Bread and Stars</div>
+      <div class="card-item">平凡与伟大的辩证：如何在日常中追寻星空</div>
+    </div>
+    <div class="card">
+      <div class="card-title">百元美钞上的王冠</div>
+      <div class="card-title-en">The Crown on the Hundred-Dollar Bill</div>
+      <div class="card-item">符号与权力：货币设计背后的文明叙事</div>
+    </div>
+    <div class="card">
+      <div class="card-title">水的囚徒</div>
+      <div class="card-title-en">Prisoner of Water — Viktor Schauberger</div>
+      <div class="card-item">维克多·舍费尔：水的奥秘与自然能源的探索者</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: 心灯无界 / ABOUT -->
+<div class="slide" data-slide="7">
+  <div class="bg-grid"></div>
+  <div class="section-title">心灯无界</div>
+  <div class="section-en">Heart Light Without Boundaries</div>
+  <div class="footer-text" style="margin-top:40px">
+    <strong>Cii.中国 — 喜爱中国</strong><br>
+    中国 · 上海 · 宝山<br>
+    《喜爱中国》执编中心<br>
+    E-mail：Axiomis@qq.com<br>
+    版权所有 未经书面授权禁止使用<br>
+    主办：上海第三只眼传播发展有限公司<br>
+    通话请先短信预约：+86-132-8807-8868<br>
+    Please text to schedule an appointment first.
+  </div>
+</div>
+
+<!-- CONTROLS -->
+<div class="page-num" id="pageNum">1 / 8</div>
+<div class="controls">
+  <button id="prevBtn" title="上一页">◀</button>
+  <div class="dots" id="dots"></div>
+  <button id="nextBtn" title="下一页">▶</button>
+  <button class="tts-btn" id="ttsBtn" title="语音播报">🔊 <span>语音</span></button>
+  <span class="auto-label" id="autoLabel">自动 8s</span>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+let autoTimer = null;
+let isSpeaking = false;
+let speechSynth = window.speechSynthesis;
+let currentUtterance = null;
+
+const dotsContainer = document.getElementById('dots');
+for(let i=0;i<total;i++){
+  const dot = document.createElement('span');
+  if(i===0) dot.classList.add('active');
+  dot.addEventListener('click',()=>goTo(i));
+  dotsContainer.appendChild(dot);
+}
+
+function updateDisplay(){
+  slides.forEach((s,i)=>s.classList.toggle('active',i===current));
+  document.querySelectorAll('.dots span').forEach((d,i)=>d.classList.toggle('active',i===current));
+  document.getElementById('pageNum').textContent = (current+1)+' / '+total;
+}
+
+function goTo(n){
+  if(n<0) n=total-1;
+  if(n>=total) n=0;
+  current=n;
+  updateDisplay();
+  resetAuto();
+}
+
+document.getElementById('prevBtn').addEventListener('click',()=>goTo(current-1));
+document.getElementById('nextBtn').addEventListener('click',()=>goTo(current+1));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft') goTo(current-1);
+  if(e.key==='ArrowRight') goTo(current+1);
+});
+
+function resetAuto(){
+  clearInterval(autoTimer);
+  autoTimer=setInterval(()=>{
+    if(!isSpeaking) goTo(current+1);
+  },8000);
+}
+
+// Date display
+const now=new Date();
+const y=now.getFullYear();
+const m=String(now.getMonth()+1).padStart(2,'0');
+const d=String(now.getDate()).padStart(2,'0');
+const week=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'][now.getDay()];
+const h=String(now.getHours()).padStart(2,'0');
+const mi=String(now.getMinutes()).padStart(2,'0');
+document.getElementById('dateDisplay').textContent=y+'年'+m+'月'+d+'日 '+week+' '+h+':'+mi;
+
+// TTS
+const ttsBtn=document.getElementById('ttsBtn');
+
+function getSlideText(index){
+  const slide=slides[index];
+  const titleCn=slide.querySelector('.section-title')||slide.querySelector('h1');
+  const titleEn=slide.querySelector('.section-en')||slide.querySelector('.cover-sub');
+  let text='';
+  if(titleCn) text+=titleCn.textContent+'。';
+  if(titleEn) text+=titleEn.textContent+'. ';
+  const titles=slide.querySelectorAll('.card-title');
+  titles.forEach(t=>{text+=t.textContent+'。'});
+  const items=slide.querySelectorAll('.card-item,.news-item .title');
+  items.forEach(t=>{text+=t.textContent+'。'});
+  return text;
+}
+
+function speakSlide(index){
+  if(isSpeaking){
+    speechSynth.cancel();
+    isSpeaking=false;
+    ttsBtn.classList.remove('speaking');
+    ttsBtn.querySelector('span').textContent='语音';
+    resetAuto();
+    return;
+  }
+  const text=getSlideText(index);
+  if(!text.trim()) return;
+  const voices=speechSynth.getVoices();
+  const zhVoice=voices.find(v=>v.lang.startsWith('zh'));
+  const utterance=new SpeechSynthesisUtterance(text);
+  utterance.lang='zh-CN';
+  utterance.rate=0.9;
+  utterance.pitch=1;
+  if(zhVoice) utterance.voice=zhVoice;
+  isSpeaking=true;
+  currentUtterance=utterance;
+  ttsBtn.classList.add('speaking');
+  ttsBtn.querySelector('span').textContent='停止';
+  clearInterval(autoTimer);
+  utterance.onend=()=>{
+    isSpeaking=false;
+    ttsBtn.classList.remove('speaking');
+    ttsBtn.querySelector('span').textContent='语音';
+    resetAuto();
+  };
+  utterance.onerror=()=>{
+    isSpeaking=false;
+    ttsBtn.classList.remove('speaking');
+    ttsBtn.querySelector('span').textContent='语音';
+    resetAuto();
+  };
+  speechSynth.speak(utterance);
+}
+
+ttsBtn.addEventListener('click',()=>speakSlide(current));
+
+// Load voices
+if(speechSynth.onvoiceschanged!==undefined) speechSynth.onvoiceschanged=()=>speechSynth.getVoices();
+
+updateDisplay();
+resetAuto();
+</script>
+</body>
+</html>
