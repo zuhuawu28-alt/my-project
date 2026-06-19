@@ -1,0 +1,314 @@
+[
+  {
+    "key": "xinai",
+    "name": "喜爱中国",
+    "parent": "",
+    "order": 1
+  },
+  {
+    "key": "shizheng",
+    "name": "时政深一度",
+    "parent": "xinai",
+    "order": 2
+  },
+  {
+    "key": "fenghuo",
+    "name": "烽火铁甲",
+    "parent": "xinai",
+    "order": 3
+  },
+  {
+    "key": "jingwei",
+    "name": "经纬脉搏",
+    "parent": "xinai",
+    "order": 4
+  },
+  {
+    "key": "sheji",
+    "name": "社稷春秋",
+    "parent": "xinai",
+    "order": 5
+  },
+  {
+    "key": "houxique",
+    "name": "后稀缺时代",
+    "parent": "",
+    "order": 6
+  },
+  {
+    "key": "keji",
+    "name": "科技双刃",
+    "parent": "houxique",
+    "order": 1
+  },
+  {
+    "key": "zhineng",
+    "name": "智能革命",
+    "parent": "keji",
+    "order": 1
+  },
+  {
+    "key": "jiyin",
+    "name": "基因边界",
+    "parent": "keji",
+    "order": 2
+  },
+  {
+    "key": "xushi",
+    "name": "虚实重构",
+    "parent": "keji",
+    "order": 3
+  },
+  {
+    "key": "nengyuan",
+    "name": "能源革命",
+    "parent": "keji",
+    "order": 4
+  },
+  {
+    "key": "diyuan",
+    "name": "地缘裂变",
+    "parent": "keji",
+    "order": 5
+  },
+  {
+    "key": "diqiu",
+    "name": "地球工程",
+    "parent": "keji",
+    "order": 6
+  },
+  {
+    "key": "liebian",
+    "name": "裂变重溯",
+    "parent": "houxique",
+    "order": 2
+  },
+  {
+    "key": "gongying",
+    "name": "供应链战",
+    "parent": "liebian",
+    "order": 1
+  },
+  {
+    "key": "duobian",
+    "name": "多边新生",
+    "parent": "liebian",
+    "order": 2
+  },
+  {
+    "key": "zimeiti",
+    "name": "自媒体悖论",
+    "parent": "liebian",
+    "order": 3
+  },
+  {
+    "key": "renzhi",
+    "name": "认知升维",
+    "parent": "liebian",
+    "order": 4
+  },
+  {
+    "key": "xushiwen",
+    "name": "虚实文明",
+    "parent": "liebian",
+    "order": 5
+  },
+  {
+    "key": "qidian",
+    "name": "奇点信仰",
+    "parent": "liebian",
+    "order": 6
+  },
+  {
+    "key": "lanxing",
+    "name": "蓝星体系",
+    "parent": "",
+    "order": 7
+  },
+  {
+    "key": "ziyuan",
+    "name": "资源配置",
+    "parent": "lanxing",
+    "order": 1
+  },
+  {
+    "key": "jiyinsu",
+    "name": "基因溯源",
+    "parent": "ziyuan",
+    "order": 1
+  },
+  {
+    "key": "zijiao",
+    "name": "资源角力",
+    "parent": "ziyuan",
+    "order": 2
+  },
+  {
+    "key": "shengtai",
+    "name": "生态武器",
+    "parent": "ziyuan",
+    "order": 3
+  },
+  {
+    "key": "zhenying",
+    "name": "阵营博弈",
+    "parent": "ziyuan",
+    "order": 4
+  },
+  {
+    "key": "dailiren",
+    "name": "代理人战",
+    "parent": "ziyuan",
+    "order": 5
+  },
+  {
+    "key": "wenmingg",
+    "name": "文明公约",
+    "parent": "ziyuan",
+    "order": 6
+  },
+  {
+    "key": "chongtu",
+    "name": "冲突重构",
+    "parent": "lanxing",
+    "order": 2
+  },
+  {
+    "key": "yineng",
+    "name": "异能觉醒",
+    "parent": "chongtu",
+    "order": 1
+  },
+  {
+    "key": "hongan",
+    "name": "红岸突围",
+    "parent": "chongtu",
+    "order": 2
+  },
+  {
+    "key": "shengwei",
+    "name": "升维实验",
+    "parent": "chongtu",
+    "order": 3
+  },
+  {
+    "key": "xingji",
+    "name": "星际建构",
+    "parent": "chongtu",
+    "order": 4
+  },
+  {
+    "key": "jinqu",
+    "name": "禁区法则",
+    "parent": "chongtu",
+    "order": 5
+  },
+  {
+    "key": "pingdeng",
+    "name": "平等转型",
+    "parent": "chongtu",
+    "order": 6
+  },
+  {
+    "key": "diwai",
+    "name": "地外文明",
+    "parent": "",
+    "order": 8
+  },
+  {
+    "key": "kexue",
+    "name": "科学探索",
+    "parent": "diwai",
+    "order": 1
+  },
+  {
+    "key": "shenkong",
+    "name": "深空探秘",
+    "parent": "kexue",
+    "order": 1
+  },
+  {
+    "key": "xingxing",
+    "name": "行星考古",
+    "parent": "kexue",
+    "order": 2
+  },
+  {
+    "key": "guance",
+    "name": "观测矩阵",
+    "parent": "kexue",
+    "order": 3
+  },
+  {
+    "key": "yixing",
+    "name": "异星生态",
+    "parent": "kexue",
+    "order": 4
+  },
+  {
+    "key": "jiduan",
+    "name": "极端适应",
+    "parent": "kexue",
+    "order": 5
+  },
+  {
+    "key": "shengwub",
+    "name": "生物标踪",
+    "parent": "kexue",
+    "order": 6
+  },
+  {
+    "key": "wenmingb",
+    "name": "文明博弈",
+    "parent": "diwai",
+    "order": 2
+  },
+  {
+    "key": "jiechu",
+    "name": "接触准则",
+    "parent": "wenmingb",
+    "order": 1
+  },
+  {
+    "key": "chongtu2",
+    "name": "冲突预案",
+    "parent": "wenmingb",
+    "order": 2
+  },
+  {
+    "key": "xinyang",
+    "name": "信仰重构",
+    "parent": "wenmingb",
+    "order": 3
+  },
+  {
+    "key": "lianhe",
+    "name": "联合探秘",
+    "parent": "wenmingb",
+    "order": 4
+  },
+  {
+    "key": "gongmin",
+    "name": "公民科探",
+    "parent": "wenmingb",
+    "order": 5
+  },
+  {
+    "key": "kechuan",
+    "name": "科传平衡",
+    "parent": "wenmingb",
+    "order": 6
+  },
+  {
+    "key": "pojian",
+    "name": "破茧者说",
+    "parent": "",
+    "order": 9
+  },
+  {
+    "key": "xindeng",
+    "name": "心灯无界",
+    "parent": "",
+    "order": 10
+  }
+]

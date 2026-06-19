@@ -1,0 +1,119 @@
+[
+  {
+    "comments": [],
+    "content": "（Cii.中国 讯）据韩联社20日披露，中国安保与礼宾先遣组已抵平壤，释放出习近平或于5月底至6月初访朝的强烈信号。若此行成真，这不仅是习近平今年的首次外访，更是落子于《中朝友好合作互助条约》缔结65周年的关键节点。以“年度首访”之姿叩访平壤，北京实则同步弈出三重棋局：向内，定锚东北亚周边基本盘；向外，在美俄博弈间重塑半岛议程主导权；对朝，则隐蔽嵌入无核化沟通渠道。面对动荡变局，中国正以“静默斡旋者”的姿态化危为机，将半岛隐患转化为对冲霸权、联动欧亚的地缘战略支点。",
+    "date": "2026-05-22",
+    "enContent": "",
+    "featured": true,
+    "id": "a1779447599893",
+    "images": [
+      "http://localhost:5099/uploads/d9184987-4cb.png"
+    ],
+    "section": "xinai",
+    "showImages": true,
+    "source": "韩联社",
+    "title": "先遣组抵平壤释放强烈信号：中国借半岛变局构筑欧亚新支点",
+    "videos": [
+      {
+        "title": "202605220001",
+        "url": "http://localhost:5099/uploads/7dbafc24-4fa.mp4"
+      }
+    ]
+  },
+  {
+    "comments": [],
+    "content": "中共中央总书记习近平近日在考察时强调，要瞄准世界科技前沿，以更大力度加强基础研究，提升原始创新能力，为实现高水平科技自立自强提供有力支撑。",
+    "date": "2026-04-30",
+    "featured": true,
+    "id": "a1",
+    "images": [],
+    "section": "shizheng",
+    "source": "新华社",
+    "title": "习近平强调以更大力度加强基础研究 提升原始创新能力",
+    "videos": []
+  },
+  {
+    "comments": [],
+    "content": "中国海军最新发布的宣传片中出现的新航母画面引发广泛关注。分析人士指出，这可能是中国第四艘航母的首次公开亮相。",
+    "date": "2026-04-28",
+    "featured": true,
+    "id": "a2",
+    "images": [],
+    "section": "fenghuo",
+    "source": "央视军事",
+    "title": "中国海军宣传片引猜想：第四艘航母是否已出鞘",
+    "videos": []
+  },
+  {
+    "comments": [],
+    "content": "多国领导人密集访华，元首外交进入高潮。各方在经贸合作、气候变化等重大议题上寻求共识。",
+    "date": "2026-04-22",
+    "featured": true,
+    "id": "a5",
+    "images": [],
+    "section": "zijiao",
+    "source": "新华社",
+    "title": "元首外交春潮涌：多国领导人密集访华",
+    "videos": []
+  },
+  {
+    "comments": [],
+    "content": "人工智能正在深刻改变全球生产力格局。从智能制造到智慧城市，AI的应用边界不断拓展，引发新一轮产业变革。",
+    "date": "2026-04-15",
+    "featured": true,
+    "id": "a3",
+    "images": [],
+    "section": "zhineng",
+    "source": "科技日报",
+    "title": "智能革命：AI重塑生产力格局",
+    "videos": []
+  },
+  {
+    "comments": [],
+    "content": "随着全球地缘政治格局变化，全球供应链正在经历深刻重构。中国制造业向内陆转移，形成新的产业布局。",
+    "date": "2026-04-02",
+    "featured": true,
+    "id": "a4",
+    "images": [],
+    "section": "gongying",
+    "source": "经济日报",
+    "title": "全球供应链重构与中国产业转移",
+    "videos": []
+  },
+  {
+    "comments": [],
+    "content": "东方文明蕴含的哲学智慧为全球精神复兴提供独特而宝贵的资源。中国传统文化中的和合思想、天下观为人类共同发展提供新范式。",
+    "date": "2026-03-19",
+    "featured": true,
+    "id": "a8",
+    "images": [],
+    "section": "xinyang",
+    "source": "光明日报",
+    "title": "中国将成为全球精神复兴摇篮",
+    "videos": []
+  },
+  {
+    "comments": [],
+    "content": "中国深空探测计划稳步推进，从月球采样返回、火星探测到小行星探测，中国正一步步走向深空。",
+    "date": "2026-03-15",
+    "featured": true,
+    "id": "a7",
+    "images": [],
+    "section": "shenkong",
+    "source": "中国航天报",
+    "title": "中国深空探测计划：走向星辰大海",
+    "videos": []
+  },
+  {
+    "comments": [],
+    "content": "中国可重复使用航天器成功完成第六次发射任务，标志着中国在天地往返运输技术上取得新的重大突破。",
+    "date": "2026-02-08",
+    "featured": true,
+    "id": "a6",
+    "images": [],
+    "section": "xingji",
+    "source": "人民日报",
+    "title": "中国可重复使用航天器第六次发射成功",
+    "videos": []
+  }
+]
